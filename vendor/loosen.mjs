@@ -338,12 +338,290 @@ return !change ? [c] : change.action === "clear" ? [] : [{...c, value: change.va
 }
 return {LIST_OPS, KINDS, checkConstraints, analyzeRows, normalizeServer, relaxedConstraints};
 })();
+const m_src_locales_en = (() => {
+const en = {
+region: "Search help",
+action: "Any of these changes gives results:",
+actionMin: {one: "Any of these changes gives at least {minItems} result:", other: "Any of these changes gives at least {minItems} results:"},
+why: "Why?",
+none: "No results with {list}",
+noneMin: {one: "Fewer than {minItems} result with {list}", other: "Fewer than {minItems} results with {list}"},
+and: "and", or: "or", plus: "+",
+clear: "Clear {what}",
+change: "{to} (instead of {from})",
+was: "was {from}",
+more: "and {count} more",
+results: {one: "{count} result", other: "{count} results"},
+applied: "Applied: {text}", undo: "Undo", undone: "Filters restored",
+eq: "{label} is {value}", ne: "{label} is not {value}",
+le: "{label} ≤ {value}", ge: "{label} ≥ {value}",
+in: "{label} is {values}", notIn: "{label} is none of {values}",
+allOf: "{label}: {values}", anyOf: "{label}: {values}", noneOf: "{label}: none of {values}",
+minBefore: "Warn me if fewer than", minAfter: {one: "result", other: "results"}, minTitle: "Minimum number of results before the explanation appears",
+unlicensed: "Unlicensed copy",
+rowsLimit: "Too many rows to analyse in the browser ({rows} > {max}).",
+failed: "The explanation is unavailable right now.",
+tooComplex: "These filters are too complex to explain. Remove a few and try again.",
+};
+return {en};
+})();
+const m_src_locales_ca = (() => {
+const ca = {
+region: "Ajuda per a la cerca",
+action: "Qualsevol d'aquests canvis dona resultats:",
+actionMin: {one: "Qualsevol d'aquests canvis dona almenys {minItems} resultat:", many: "Qualsevol d'aquests canvis dona almenys {minItems} de resultats:", other: "Qualsevol d'aquests canvis dona almenys {minItems} resultats:"},
+why: "Per què?",
+none: "Cap resultat amb {list}",
+noneMin: {one: "Menys de {minItems} resultat amb {list}", many: "Menys de {minItems} de resultats amb {list}", other: "Menys de {minItems} resultats amb {list}"},
+and: "i", or: "o", plus: "+",
+clear: "Esborra {what}",
+change: "{to} (en lloc de {from})",
+was: "era {from}",
+more: "i {count} més",
+results: {one: "{count} resultat", many: "{count} de resultats", other: "{count} resultats"},
+applied: "Aplicat: {text}", undo: "Desfés", undone: "Filtres restaurats",
+eq: "{label} és {value}", ne: "{label} no és {value}",
+le: "{label} ≤ {value}", ge: "{label} ≥ {value}",
+in: "{label} és {values}", notIn: "{label} no és cap de {values}",
+allOf: "{label}: {values}", anyOf: "{label}: {values}", noneOf: "{label}: cap de {values}",
+minBefore: "Avisa'm si hi ha menys de", minAfter: {one: "resultat", many: "resultats", other: "resultats"}, minTitle: "Nombre mínim de resultats per sota del qual apareix l'explicació",
+unlicensed: "Còpia sense llicència",
+rowsLimit: "Hi ha massa files per analitzar al navegador ({rows} > {max}).",
+failed: "L'explicació no està disponible ara mateix.",
+tooComplex: "Aquests filtres són massa complexos per explicar-los. Prova de treure'n alguns.",
+};
+return {ca};
+})();
+const m_src_locales_es = (() => {
+const es = {
+region: "Ayuda para la búsqueda",
+action: "Cualquiera de estos cambios da resultados:",
+actionMin: {one: "Cualquiera de estos cambios da al menos {minItems} resultado:", many: "Cualquiera de estos cambios da al menos {minItems} de resultados:", other: "Cualquiera de estos cambios da al menos {minItems} resultados:"},
+why: "¿Por qué?",
+none: "Ningún resultado con {list}",
+noneMin: {one: "Menos de {minItems} resultado con {list}", many: "Menos de {minItems} de resultados con {list}", other: "Menos de {minItems} resultados con {list}"},
+and: "y", or: "o", plus: "+",
+clear: "Borrar {what}",
+change: "{to} (en lugar de {from})",
+was: "era {from}",
+more: "y {count} más",
+results: {one: "{count} resultado", many: "{count} de resultados", other: "{count} resultados"},
+applied: "Aplicado: {text}", undo: "Deshacer", undone: "Filtros restaurados",
+eq: "{label} es {value}", ne: "{label} no es {value}",
+le: "{label} ≤ {value}", ge: "{label} ≥ {value}",
+in: "{label} es {values}", notIn: "{label} no es ninguno de {values}",
+allOf: "{label}: {values}", anyOf: "{label}: {values}", noneOf: "{label}: ninguno de {values}",
+minBefore: "Avísame si hay menos de", minAfter: {one: "resultado", many: "resultados", other: "resultados"}, minTitle: "Número mínimo de resultados por debajo del cual aparece la explicación",
+unlicensed: "Copia sin licencia",
+rowsLimit: "Hay demasiadas filas para analizar en el navegador ({rows} > {max}).",
+failed: "La explicación no está disponible en este momento.",
+tooComplex: "Estos filtros son demasiado complejos para explicarlos. Prueba a quitar algunos.",
+};
+return {es};
+})();
+const m_src_locales_fr = (() => {
+const fr = {
+region: "Aide à la recherche",
+action: "L'un de ces changements donne des résultats :",
+actionMin: {one: "L'un de ces changements donne au moins {minItems} résultat :", many: "L'un de ces changements donne au moins {minItems} de résultats :", other: "L'un de ces changements donne au moins {minItems} résultats :"},
+why: "Pourquoi ?",
+none: "Aucun résultat avec {list}",
+noneMin: {one: "Moins de {minItems} résultat avec {list}", many: "Moins de {minItems} de résultats avec {list}", other: "Moins de {minItems} résultats avec {list}"},
+and: "et", or: "ou", plus: "+",
+clear: "Effacer {what}",
+change: "{to} (au lieu de {from})",
+was: "était {from}",
+more: "et {count} de plus",
+results: {one: "{count} résultat", many: "{count} de résultats", other: "{count} résultats"},
+applied: "Appliqué : {text}", undo: "Annuler", undone: "Filtres rétablis",
+eq: "{label} est {value}", ne: "{label} n'est pas {value}",
+le: "{label} ≤ {value}", ge: "{label} ≥ {value}",
+in: "{label} est {values}", notIn: "{label} n'est aucun de {values}",
+allOf: "{label} : {values}", anyOf: "{label} : {values}", noneOf: "{label} : aucun de {values}",
+minBefore: "Me prévenir s'il y a moins de", minAfter: {one: "résultat", many: "résultats", other: "résultats"}, minTitle: "Nombre minimal de résultats en dessous duquel l'explication apparaît",
+unlicensed: "Copie sans licence",
+rowsLimit: "Trop de lignes à analyser dans le navigateur ({rows} > {max}).",
+failed: "L'explication n'est pas disponible pour le moment.",
+tooComplex: "Ces filtres sont trop complexes à expliquer. Essayez d'en retirer quelques-uns.",
+};
+return {fr};
+})();
+const m_src_locales_pt = (() => {
+const pt = {
+region: "Ajuda para a busca",
+action: "Qualquer uma destas mudanças gera resultados:",
+actionMin: {one: "Qualquer uma destas mudanças gera pelo menos {minItems} resultado:", many: "Qualquer uma destas mudanças gera pelo menos {minItems} de resultados:", other: "Qualquer uma destas mudanças gera pelo menos {minItems} resultados:"},
+why: "Por quê?",
+none: "Nenhum resultado com {list}",
+noneMin: {one: "Menos de {minItems} resultado com {list}", many: "Menos de {minItems} de resultados com {list}", other: "Menos de {minItems} resultados com {list}"},
+and: "e", or: "ou", plus: "+",
+clear: "Limpar {what}",
+change: "{to} (em vez de {from})",
+was: "era {from}",
+more: "e mais {count}",
+results: {one: "{count} resultado", many: "{count} de resultados", other: "{count} resultados"},
+applied: "Aplicado: {text}", undo: "Desfazer", undone: "Filtros restaurados",
+eq: "{label} é {value}", ne: "{label} não é {value}",
+le: "{label} ≤ {value}", ge: "{label} ≥ {value}",
+in: "{label} é {values}", notIn: "{label} não é nenhum de {values}",
+allOf: "{label}: {values}", anyOf: "{label}: {values}", noneOf: "{label}: nenhum de {values}",
+minBefore: "Avise-me se houver menos de", minAfter: {one: "resultado", many: "resultados", other: "resultados"}, minTitle: "Número mínimo de resultados abaixo do qual a explicação aparece",
+unlicensed: "Cópia sem licença",
+rowsLimit: "Há linhas demais para analisar no navegador ({rows} > {max}).",
+failed: "A explicação não está disponível no momento.",
+tooComplex: "Esses filtros são complexos demais para explicar. Tente remover alguns.",
+};
+return {pt};
+})();
+const m_src_locales_zh = (() => {
+const zh = {
+region: "搜索帮助",
+action: "任意一项调整都会带来结果：",
+actionMin: "任意一项调整都至少带来 {minItems} 个结果：",
+why: "为什么？",
+none: "{list} 没有结果",
+noneMin: "{list} 的结果少于 {minItems} 个",
+and: "和", or: "或", plus: "+",
+clear: "清除{what}",
+change: "{to}（原为 {from}）",
+was: "原为 {from}",
+more: "另有 {count} 项",
+results: "{count} 个结果",
+applied: "已应用：{text}", undo: "撤销", undone: "已恢复筛选条件",
+eq: "{label}为 {value}", ne: "{label}不是 {value}",
+le: "{label} ≤ {value}", ge: "{label} ≥ {value}",
+in: "{label}为 {values}", notIn: "{label}不是 {values} 中的任何一个",
+allOf: "{label}：{values}", anyOf: "{label}：{values}", noneOf: "{label}：不含 {values} 中任何一项",
+minBefore: "结果少于", minAfter: "个时提醒我", minTitle: "低于该结果数量时才显示说明",
+unlicensed: "未授权副本",
+rowsLimit: "行数过多，无法在浏览器中分析（{rows} > {max}）。",
+failed: "暂时无法提供说明。",
+tooComplex: "这些筛选条件过于复杂，无法解释。请删除几个后重试。",
+};
+return {zh};
+})();
+const m_src_locales_ja = (() => {
+const ja = {
+region: "検索のヒント",
+action: "次のどの変更でも結果が表示されます：",
+actionMin: "次のどの変更でも{minItems}件以上の結果が表示されます：",
+why: "なぜ？",
+none: "{list}では結果がありません",
+noneMin: "{list}では結果が{minItems}件未満です",
+and: "と", or: "または", plus: "+",
+clear: "{what}をクリア",
+change: "{to}（変更前：{from}）",
+was: "元：{from}",
+more: "ほか{count}件",
+results: "{count}件",
+applied: "適用しました：{text}", undo: "元に戻す", undone: "絞り込み条件を元に戻しました",
+eq: "{label}は{value}", ne: "{label}は{value}以外",
+le: "{label} ≤ {value}", ge: "{label} ≥ {value}",
+in: "{label}が{values}のいずれか", notIn: "{label}が{values}のいずれでもない",
+allOf: "{label}：{values}", anyOf: "{label}：{values}", noneOf: "{label}：{values}のいずれも含まない",
+minBefore: "結果が", minAfter: "件未満のとき通知する", minTitle: "この件数を下回ると説明が表示されます",
+unlicensed: "ライセンスのないコピー",
+rowsLimit: "行数が多すぎるため、ブラウザーでは分析できません（{rows} > {max}）。",
+failed: "現在、説明を表示できません。",
+tooComplex: "絞り込み条件が複雑すぎて説明できません。いくつか外して、もう一度お試しください。",
+};
+return {ja};
+})();
+const m_src_locales_ar = (() => {
+const ar = {
+region: "مساعدة البحث",
+action: "أي من هذه التعديلات يعطي نتائج:",
+actionMin: {zero: "أي من هذه التعديلات يعطي {minItems} نتيجة على الأقل:", one: "أي من هذه التعديلات يعطي نتيجة واحدة على الأقل:", two: "أي من هذه التعديلات يعطي نتيجتين على الأقل:", few: "أي من هذه التعديلات يعطي {minItems} نتائج على الأقل:", many: "أي من هذه التعديلات يعطي {minItems} نتيجة على الأقل:", other: "أي من هذه التعديلات يعطي {minItems} نتيجة على الأقل:"},
+why: "لماذا؟",
+none: "لا توجد نتائج مع {list}",
+noneMin: {zero: "أقل من {minItems} نتيجة مع {list}", one: "أقل من نتيجة واحدة مع {list}", two: "أقل من نتيجتين مع {list}", few: "أقل من {minItems} نتائج مع {list}", many: "أقل من {minItems} نتيجة مع {list}", other: "أقل من {minItems} نتيجة مع {list}"},
+and: "و", or: "أو", plus: "+",
+clear: "مسح {what}",
+change: "{to} (بدلاً من {from})",
+was: "كان {from}",
+more: {zero: "و{count} أخرى", one: "وواحدة أخرى", two: "واثنتان أخريان", few: "و{count} أخرى", many: "و{count} أخرى", other: "و{count} أخرى"},
+results: {zero: "لا توجد نتائج", one: "نتيجة واحدة", two: "نتيجتان", few: "{count} نتائج", many: "{count} نتيجة", other: "{count} نتيجة"},
+applied: "تم التطبيق: {text}", undo: "تراجع", undone: "تمت استعادة المرشحات",
+eq: "{label} هو {value}", ne: "{label} ليس {value}",
+le: "{label} ⁦≤ {value}⁩", ge: "{label} ⁦≥ {value}⁩",
+in: "{label} هو {values}", notIn: "{label} ليس أياً من {values}",
+allOf: "{label}: {values}", anyOf: "{label}: {values}", noneOf: "{label}: لا شيء من {values}",
+minBefore: "نبّهني إذا كان عدد النتائج أقل من", minAfter: "", minTitle: "الحد الأدنى لعدد النتائج الذي يظهر دونه الشرح",
+unlicensed: "نسخة بدون ترخيص",
+rowsLimit: "عدد الصفوف كبير جداً للتحليل في المتصفح (⁦{rows} > {max}⁩).",
+failed: "الشرح غير متاح حالياً.",
+tooComplex: "هذه المرشحات معقدة جداً لشرحها. أزل بعضها وحاول مرة أخرى.",
+};
+return {ar};
+})();
+const m_src_texts = (() => {
+const {en} = m_src_locales_en;
+const {ca} = m_src_locales_ca;
+const {es} = m_src_locales_es;
+const {fr} = m_src_locales_fr;
+const {pt} = m_src_locales_pt;
+const {zh} = m_src_locales_zh;
+const {ja} = m_src_locales_ja;
+const {ar} = m_src_locales_ar;
+const TEXTS = {en, ca, es, fr, pt, zh, ja, ar};
+const LANGUAGES = Object.keys(TEXTS);
+const RTL_LANGUAGES = ["ar"];
+const DEFAULT_TEXTS = en;
+/** The parameter whose value chooses the plural form of a key. Only these keys may be plural objects. */
+const PLURAL_PARAM = {actionMin: "minItems", noneMin: "minItems", minAfter: "minItems", more: "count", results: "count"};
+const CATEGORIES = ["zero", "one", "two", "few", "many", "other"];
+/** "fr-CH" -> "fr", "ZH_hant" -> "zh", an unknown or missing language -> "en". */
+function resolveLang(tag) {
+if (tag === undefined || tag === null || tag === "") return "en";
+if (typeof tag !== "string") throw new Error(`Loosen: option lang must be a language tag such as "fr" (got ${typeof tag})`);
+const primary = tag.trim().toLowerCase().split(/[-_]/)[0];
+return LANGUAGES.includes(primary) ? primary : "en";
+}
+const isRtl = lang => RTL_LANGUAGES.includes(lang);
+/** The locale for numbers: the explicit one, else the language tag when Intl knows it, else the resolved language. */
+function resolveLocale(locale, tag, lang) {
+if (locale) return locale;
+try { if (typeof tag === "string" && tag.trim()) return Intl.getCanonicalLocales(tag.trim().replace(/_/g, "-"))[0]; } catch { /* not a valid tag */ }
+return lang;
+}
+/** Numbers are always written with Latin digits (also in Arabic), so a count reads the same as in the host's data. */
+const numberFormat = locale => {
+try { return new Intl.NumberFormat(locale || undefined, {numberingSystem: "latn"}); }
+catch { return new Intl.NumberFormat(undefined, {numberingSystem: "latn"}); }
+};
+function check(overrides) {
+for (const [key, value] of Object.entries(overrides)) {
+if (!Object.hasOwn(DEFAULT_TEXTS, key)) throw new Error(`unknown text "${key}" (known: ${Object.keys(DEFAULT_TEXTS).join(", ")})`);
+if (typeof value === "string" || typeof value === "function") continue;
+if (value && typeof value === "object" && !Array.isArray(value)) {
+if (!Object.hasOwn(PLURAL_PARAM, key)) throw new Error(`text "${key}" cannot be an object: only ${Object.keys(PLURAL_PARAM).join(", ")} have plural forms`);
+for (const category of Object.keys(value)) if (!CATEGORIES.includes(category)) throw new Error(`text "${key}": unknown plural category "${category}" (use ${CATEGORIES.join(", ")})`);
+if (typeof value.other !== "string") throw new Error(`text "${key}": the plural form "other" is required`);
+continue;
+}
+throw new Error(`text "${key}" must be a string, a function or (for ${Object.keys(PLURAL_PARAM).join(", ")}) an object of plural forms`);
+}
+}
+/** -> t(key, params): the text for a key in the language, with {placeholders} filled in. `count` and `minItems` are numbers: they choose the plural form and are written in the locale's format. */
+function makeTexts(overrides = {}, lang = "en", locale) {
+check(overrides);
+const all = {...TEXTS[lang], ...overrides}, rules = new Intl.PluralRules(lang), number = numberFormat(locale ?? lang);
+return (key, params = {}) => {
+let text = all[key];
+if (typeof text === "function") return text(params);
+if (typeof text === "object") { const form = text[rules.select(params[PLURAL_PARAM[key]])]; text = form ?? text.other; }
+return text.replace(/\{(\w+)\}/g, (_, name) => { const v = params[name]; return typeof v === "number" && (name === "count" || name === "minItems") ? number.format(v) : String(v ?? ""); });
+};
+}
+return {TEXTS, LANGUAGES, RTL_LANGUAGES, DEFAULT_TEXTS, PLURAL_PARAM, resolveLang, isRtl, resolveLocale, numberFormat, makeTexts};
+})();
 const m_src_present = (() => {
 const {LIST_OPS} = m_src_engine;
+const {numberFormat} = m_src_texts;
 const SYMBOL = {le: "≤", ge: "≥"};
 /** -> {format(attr, value), label(attr), describe(constraint), clauses(constraint)}: how attribute values and constraints read. */
-function formatter(attributes, t, locale) {
-const number = new Intl.NumberFormat(locale || undefined);
+function formatter(attributes, t, locale, rtl = false) {
+const number = numberFormat(locale);
 const label = attr => attributes?.[attr]?.label ?? attr;
 const format = (attr, value) => attributes?.[attr]?.format ? attributes[attr].format(value) : typeof value === "number" ? number.format(value) : String(value);
 const joiner = {in: t("or"), anyOf: t("or"), allOf: t("and")};
@@ -351,7 +629,8 @@ const describe = c => {
 if (LIST_OPS.has(c.op)) return t(c.op, {label: label(c.attr), values: c.values.map(v => format(c.attr, v)).join(joiner[c.op] ? ` ${joiner[c.op]} ` : ", ")});
 return t(c.op, {label: label(c.attr), value: format(c.attr, c.value)});
 };
-return {format, label, describe};
+const isolate = text => rtl ? `\u2066${text}\u2069` : text;
+return {format, label, describe, isolate};
 }
 /**
 * -> {kind, text, label, was, changes, results}: one chip. `text` is the concise wording ("Rent ≤ 706 CHF"); `was` the original bounds ("was ≤ 500 CHF", "" when nothing was adapted);
@@ -369,7 +648,7 @@ return {index: r.constraint, attr: c.attr, op: c.op, action: adapt ? "adapt" : "
 const adapted = changes.filter(ch => ch.action === "adapt").length;
 const parts = changes.map(ch => {
 if (ch.action === "adapt") {
-const symbol = SYMBOL[ch.op], to = `${fmt.label(ch.attr)} ${symbol} ${fmt.format(ch.attr, ch.value)}`, from = `${symbol} ${fmt.format(ch.attr, ch.from)}`;
+const symbol = SYMBOL[ch.op], to = `${fmt.label(ch.attr)} ${fmt.isolate(`${symbol} ${fmt.format(ch.attr, ch.value)}`)}`, from = fmt.isolate(`${symbol} ${fmt.format(ch.attr, ch.from)}`);
 return {short: to, full: t("change", {to, from}), was: adapted > 1 ? `${fmt.label(ch.attr)} ${from}` : from};
 }
 const text = t("clear", {what: counts.get(ch.attr) === 1 ? fmt.label(ch.attr) : fmt.describe(constraints[ch.index])});
@@ -379,19 +658,22 @@ const join = key => parts.map(p => p[key]).join(` ${t("plus")} `);
 const was = parts.filter(p => p.was).map(p => p.was).join(", ");
 return {kind, text: join("short"), label: join("full"), was: was ? t("was", {from: was}) : "", changes, results};
 }
-/** "1 result", "12 results", "1,234 results" (the number in the locale's format). */
-const resultsText = (count, t, locale) => t(count === 1 ? "resultOne" : "resultMany", {count: new Intl.NumberFormat(locale || undefined).format(count)});
+/** "1 result", "12 results", "1,234 results": the plural form of the language, the number in the locale's format (both done by `t`). */
+const resultsText = (count, t) => t("results", {count});
 /** The whole panel model, or null when there is nothing to show. */
-function present(result, constraints, {attributes, t, locale, minItems, limit = 8, why = "collapsed", showResults = true}) {
-const fmt = formatter(attributes, t, locale);
+function present(result, constraints, {attributes, t, locale, rtl = false, minItems, limit = 8, why = "collapsed", showResults = true}) {
+const fmt = formatter(attributes, t, locale, rtl);
 const relaxations = result.relaxations.map(r => chip("global", r.changes, constraints, fmt, t, showResults ? r.results : null));
-const conflicts = why === "hidden" ? [] : result.conflicts.filter(k => k.constraints.length >= 2).map(k => ({
-text: t(minItems === 1 ? "noneOne" : "noneMany", {minItems, list: k.constraints.map(i => fmt.describe(constraints[i])).join(` ${t("and")} `)}),
+const conflicts = why === "hidden" ? [] : result.conflicts.filter(k => k.constraints.length >= 2).map(k => {
+const list = k.constraints.map(i => fmt.describe(constraints[i])).join(` ${t("and")} `);
+return {
+text: minItems === 1 ? t("none", {list}) : t("noneMin", {minItems, list}),
 local: k.local.map(r => chip("local", [r], constraints, fmt, t)),         // no result count: a local relaxation answers a sub-query (see the guide)
-}));
+};
+});
 if (!relaxations.length && !conflicts.length) return null;
 return {
-action: relaxations.length ? t(minItems === 1 ? "actionOne" : "actionMany", {minItems}) : "",
+action: !relaxations.length ? "" : minItems === 1 ? t("action") : t("actionMin", {minItems}),
 relaxations: relaxations.slice(0, limit), moreRelaxations: Math.max(0, relaxations.length - limit),
 why: conflicts.length ? t("why") : "",
 conflicts: conflicts.slice(0, limit), moreConflicts: Math.max(0, conflicts.length - limit),
@@ -677,7 +959,7 @@ result = analyzeRows(rows, o.attributes, constraints, {minItems, maxSize: o.maxS
 }
 result.tookMs ??= Math.round((performanceNow() - started) * 10) / 10;
 if (result.success) return finish(mine, {kind: "none"});
-const model = present(result, constraints, {attributes: o.attributes, t, locale: o.locale, minItems, limit: o.limit, why: o.why, showResults: o.showResults});
+const model = present(result, constraints, {attributes: o.attributes, t, locale: o.locale, rtl: o.rtl, minItems, limit: o.limit, why: o.why, showResults: o.showResults});
 if (!model) return finish(mine, {kind: "none"});
 return finish(mine, {kind: "panel", model, result, constraints},
 {type: "panel_shown", constraints, relaxations: result.relaxations, conflicts: result.conflicts, mode: serverMode ? "server" : "client", tookMs: result.tookMs});
@@ -725,64 +1007,29 @@ destroy() { destroyed = true; seq++; abort?.abort(); cancelDebounce?.(); },
 }
 return {WHY, ORIGINAL, ORDER, createCore};
 })();
-const m_src_texts = (() => {
-const DEFAULT_TEXTS = {
-region: "Search help",
-actionOne: "Any of these changes gives results:",
-actionMany: "Any of these changes gives at least {minItems} results:",
-why: "Why?",
-noneOne: "No results with {list}",
-noneMany: "Fewer than {minItems} results with {list}",
-and: "and", or: "or", plus: "+",
-clear: "Clear {what}",
-change: "{to} (instead of {from})",
-was: "was {from}",
-more: "and {count} more",
-resultOne: "{count} result", resultMany: "{count} results",     // shown after a global chip: "Rent ≤ 706 CHF · 12 results"
-applied: "Applied: {text}", undo: "Undo", undone: "Filters restored",
-eq: "{label} is {value}", ne: "{label} is not {value}",
-le: "{label} ≤ {value}", ge: "{label} ≥ {value}",
-in: "{label} is {values}", notIn: "{label} is none of {values}",
-allOf: "{label}: {values}", anyOf: "{label}: {values}", noneOf: "{label}: none of {values}",
-minBefore: "Warn me if fewer than", minAfter: "results", minTitle: "Minimum number of results before the explanation appears",
-unlicensed: "Unlicensed copy",
-rowsLimit: "Too many rows to analyse in the browser ({rows} > {max}).",
-failed: "The explanation is unavailable right now.",
-tooComplex: "These filters are too complex to explain. Remove a few and try again.",
-};
-/** -> t(key, params): the text for a key with {placeholders} filled in. */
-function makeTexts(overrides = {}) {
-for (const key of Object.keys(overrides)) if (!Object.hasOwn(DEFAULT_TEXTS, key)) throw new Error(`unknown text "${key}" (known: ${Object.keys(DEFAULT_TEXTS).join(", ")})`);
-const all = {...DEFAULT_TEXTS, ...overrides};
-return (key, params = {}) => {
-const text = all[key];
-return typeof text === "function" ? text(params) : text.replace(/\{(\w+)\}/g, (_, name) => String(params[name] ?? ""));
-};
-}
-return {DEFAULT_TEXTS, makeTexts};
-})();
 const m_src_styles = (() => {
 const CSS = `
 :host { display: block; font: var(--loosen-font, inherit); color: var(--loosen-fg, inherit); }
 *, *::before, *::after { box-sizing: border-box; }
 .panel { background: var(--loosen-bg, #fff); border: 1px solid var(--loosen-border, #d0d5dd); border-radius: var(--loosen-radius, 8px); padding: var(--loosen-padding, 12px 14px); margin: 8px 0; line-height: 1.4; }
-.title { margin: 0 0 6px; font-weight: 600; }
-.title:not(:first-child) { margin-top: 12px; }
+.title { margin-block: 0 6px; margin-inline: 0; font-weight: 600; }
+.title:not(:first-child) { margin-block-start: 12px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font: inherit; font-size: .95em; cursor: pointer; border: 1px solid var(--loosen-accent, #2563eb); background: var(--loosen-chip-bg, #eff4ff); color: var(--loosen-chip-fg, #1d4ed8); border-radius: 999px; padding: 4px 12px; text-align: left; }
+.chip { font: inherit; font-size: .95em; cursor: pointer; border: 1px solid var(--loosen-accent, #2563eb); background: var(--loosen-chip-bg, #eff4ff); color: var(--loosen-chip-fg, #1d4ed8); border-radius: 999px; padding: 4px 12px; text-align: start; max-width: 100%; overflow-wrap: anywhere; }
 .chip { position: relative; }
 .chip:hover { background: var(--loosen-accent, #2563eb); color: var(--loosen-accent-fg, #fff); }
 .chip:focus-visible, .min input:focus-visible, .badge:focus-visible { outline: 2px solid var(--loosen-accent, #2563eb); outline-offset: 2px; }
 .count { opacity: .8; font-size: .9em; white-space: nowrap; }
 .undo { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0; font-size: .9em; color: var(--loosen-muted, #667085); }
-.undo button { font: inherit; cursor: pointer; border: 0; background: none; padding: 2px 4px; color: var(--loosen-chip-fg, #1d4ed8); text-decoration: underline; }
+.undo button { font: inherit; cursor: pointer; border: 0; background: none; padding-block: 2px; padding-inline: 4px; color: var(--loosen-chip-fg, #1d4ed8); text-decoration: underline; }
 .undo button:focus-visible { outline: 2px solid var(--loosen-accent, #2563eb); outline-offset: 2px; }
 .undo:empty { display: none; }
 .was { color: inherit; opacity: .75; font-size: .85em; }
-.tip { display: none; position: absolute; left: 0; bottom: calc(100% + 4px); z-index: 1; white-space: nowrap; padding: 2px 8px; font-size: .85em; border-radius: 4px; background: var(--loosen-fg, #101828); color: var(--loosen-bg, #fff); pointer-events: none; }
+.tip { display: none; position: absolute; inset-inline-start: 0; bottom: calc(100% + 4px); z-index: 1; white-space: nowrap; padding: 2px 8px; font-size: .85em; border-radius: 4px; background: var(--loosen-fg, #101828); color: var(--loosen-bg, #fff); pointer-events: none; }
 .chip:focus-visible .tip { display: block; }
-.why-toggle { font: inherit; cursor: pointer; border: 0; background: none; padding: 2px 0; margin-top: 10px; color: var(--loosen-chip-fg, #1d4ed8); text-decoration: underline; }
+.why-toggle { font: inherit; cursor: pointer; border: 0; background: none; padding-block: 2px; padding-inline: 0; margin-block-start: 10px; text-align: start; color: var(--loosen-chip-fg, #1d4ed8); text-decoration: underline; }
 .why-toggle::after { content: " ▸"; }
+[dir=rtl] .why-toggle::after { content: " ◂"; }          /* the disclosure arrow points the way the text reads */
 .why-toggle.open::after { content: " ▾"; }
 .why-toggle:focus-visible { outline: 2px solid var(--loosen-accent, #2563eb); outline-offset: 2px; }
 .why[hidden] { display: none; }
@@ -791,11 +1038,15 @@ const CSS = `
 .why li > span { display: block; margin-bottom: 4px; }
 .more { color: var(--loosen-muted, #667085); font-size: .9em; align-self: center; }
 .note { margin: 8px 0; color: var(--loosen-muted, #667085); font-size: .9em; }
-.foot { margin-top: 10px; text-align: right; font-size: .8em; }
-.badge { color: var(--loosen-muted, #667085); }
+.foot { margin-block-start: 10px; text-align: end; font-size: .8em; }
+.badge { color: var(--loosen-muted, #667085); unicode-bidi: isolate; direction: ltr; }
 .unlicensed { margin: 6px 0; padding: 2px 8px; display: inline-block; font-size: .8em; color: var(--loosen-warn, #b42318); border: 1px dashed var(--loosen-warn, #b42318); border-radius: 4px; }
 .min { display: block; margin: 4px 0; font-size: .9em; color: var(--loosen-muted, #667085); }
-.min input { width: 4em; font: inherit; margin: 0 4px; }
+.min input { width: 4em; font: inherit; margin-inline: 4px; }
+/* scripts: Arabic must not be letter-spaced (it would break the joins); Arabic and CJK read better with a taller line; the CJK glyph variants come from the lang attribute and the system fonts (no webfonts) */
+[lang=ar] { letter-spacing: normal; }
+[lang=ar] .panel, [lang=zh] .panel, [lang=ja] .panel { line-height: 1.6; }
+[lang=zh], [lang=ja] { word-break: normal; line-break: strict; }
 `;
 return {CSS};
 })();
@@ -806,21 +1057,22 @@ return {BADGE_TEXT, BADGE_URL};
 })();
 const m_src_mount = (() => {
 const {createCore} = m_src_core;
-const {makeTexts} = m_src_texts;
+const {makeTexts, resolveLang, resolveLocale, isRtl} = m_src_texts;
 const {CSS} = m_src_styles;
 const {BADGE_TEXT, BADGE_URL} = m_src_brand;
 const {resultsText} = m_src_present;
 const el = (tag, className, text) => { const e = document.createElement(tag); if (className) e.className = className; if (text) e.textContent = text; return e; };
 /** Every option mount() understands; anything else is a typo and fails fast. docs/INTEGRATION.md must describe each of them (checked by a test). */
 const OPTION_NAMES = ["licence", "publicKey", "attributes", "data", "server", "getConstraints", "applyRelaxation", "minItems", "maxSize", "limit", "userMinItems", "storageKey",
-"why", "original", "showResults", "order", "restoreConstraints", "onPreview", "licenceUrl", "locale", "texts", "onEvent", "debounceMs", "timeoutMs", "autoUpdate", "fetch", "hostname"];
+"why", "original", "showResults", "order", "restoreConstraints", "onPreview", "licenceUrl", "lang", "locale", "texts", "onEvent", "debounceMs", "timeoutMs", "autoUpdate", "fetch", "hostname"];
 const PREVIEW_MS = 150;                                   // a chip must stay hovered or focused this long before `relaxation_previewed` is emitted (the onPreview callback itself is immediate)
 let sheet;                                                // one constructable stylesheet shared by all widgets (also fine under a strict CSP)
 function mount(element, options = {}) {
 if (!(element instanceof Element)) throw new Error("Loosen: mount(element, options) needs a DOM element");
 for (const name of Object.keys(options)) if (!OPTION_NAMES.includes(name)) throw new Error(`Loosen: unknown option "${name}" (known: ${OPTION_NAMES.join(", ")})`);
 if (typeof options.applyRelaxation !== "function") throw new Error("Loosen: option applyRelaxation is required");
-const t = makeTexts(options.texts);
+const tag = options.lang ?? document.documentElement.lang, lang = resolveLang(tag), rtl = isRtl(lang), locale = resolveLocale(options.locale, tag, lang);
+const t = makeTexts(options.texts, lang, locale);
 const storageKey = options.storageKey ?? (element.id ? `loosen-minItems:${element.id}` : null);
 const storage = { get() { try { return storageKey && Number(localStorage.getItem(storageKey)) || null; } catch { return null; } },
 set(n) { try { if (storageKey) localStorage.setItem(storageKey, String(n)); } catch { /* blocked or full: it just lasts until the page closes */ } } };
@@ -832,6 +1084,7 @@ else shadow.append(Object.assign(el("style"), {textContent: CSS}));
 const root = el("div"), live = el("div"), undoBox = el("div", "undo"), notice = el("div");
 live.setAttribute("aria-live", "polite"); live.setAttribute("role", "region"); live.setAttribute("aria-label", t("region"));
 undoBox.setAttribute("role", "status");                            // "Applied: ... Undo" and "Filters restored" are announced when they appear
+root.lang = lang; root.dir = rtl ? "rtl" : "ltr";                 // lang chooses the CJK glyph variants; dir is explicit so a host page in the other direction cannot flip the panel
 root.append(live, undoBox, notice);
 shadow.append(root);
 element.append(host);
@@ -853,10 +1106,10 @@ function chipButton(chip, constraints) {
 const b = el("button", "chip", chip.text);
 b.type = "button";
 if (chip.results !== null) {
-const count = el("span", "count", ` · ${resultsText(chip.results, t, options.locale)}`);
+const count = el("span", "count", ` · ${resultsText(chip.results, t)}`);
 b.append(count);
 }
-const name = chip.results !== null ? `${chip.label}, ${resultsText(chip.results, t, options.locale)}` : chip.label;
+const name = chip.results !== null ? `${chip.label}, ${resultsText(chip.results, t)}` : chip.label;
 if (chip.was && mode !== "none") {
 b.setAttribute("aria-label", name);                             // the name always has the full phrase, whatever is shown
 if (inline()) b.append(" ", el("span", "was", `(${chip.was})`));
@@ -898,6 +1151,7 @@ clearPreview();                                                   // the chips a
 live.replaceChildren();
 if (view.kind === "panel") {
 const {model, constraints} = view, panel = el("div", "panel");
+panel.dir = root.dir;
 if (model.action) panel.append(el("p", "title", model.action), chipList(model.relaxations, model.moreRelaxations, constraints));
 if (model.why) {
 const list = el("ul", "why"), expanded = options.why === "expanded";
@@ -921,6 +1175,7 @@ panel.append(toggle, list);
 }
 if (verdict?.badge) {
 const foot = el("div", "foot"), a = el("a", "badge", BADGE_TEXT);
+a.dir = "ltr"; a.lang = "en";                                  // the brand name stays left to right
 a.href = BADGE_URL; a.target = "_blank"; a.rel = "noopener";
 foot.append(a); panel.append(foot);
 }
@@ -951,16 +1206,18 @@ refocus = true;
 undoBox.append(el("span", "", t("applied", {text: state.text})), button);
 if (chipHadFocus) { button.focus(); chipHadFocus = false; }          // the chip that was clicked is gone: keep the keyboard user's place
 }
-const core = createCore({...options, minItems}, {render: v => { view = v; whyOpen = false; draw(); if (refocus) { refocus = false; live.querySelector(".chip")?.focus(); } }, emit, t, undoChanged: drawUndo});
+const core = createCore({...options, minItems, locale, rtl}, {render: v => { view = v; whyOpen = false; draw(); if (refocus) { refocus = false; live.querySelector(".chip")?.focus(); } }, emit, t, undoChanged: drawUndo});
 core.licence.then(v => { verdict = v; draw(); });
 if (options.userMinItems) {
 const label = el("label", "min"), input = el("input");
 input.type = "number"; input.min = "1"; input.step = "1"; input.value = String(core.minItems);
 label.title = t("minTitle");
-label.append(t("minBefore"), input, t("minAfter"));
+const after = document.createTextNode(t("minAfter", {minItems: core.minItems}));
+label.append(t("minBefore"), input, after);
+input.addEventListener("input", () => { const n = Math.floor(Number(input.value)); if (n >= 1) after.data = t("minAfter", {minItems: n}); });      // the plural form follows what is typed
 input.addEventListener("change", () => {
 const n = Math.floor(Number(input.value));
-if (!(n >= 1)) { input.value = String(core.minItems); return; }
+if (!(n >= 1)) { input.value = String(core.minItems); after.data = t("minAfter", {minItems: core.minItems}); return; }
 core.setMinItems(n); storage.set(n); widget.update();
 });
 root.prepend(label);
@@ -1069,7 +1326,7 @@ const {BADGE_URL, BADGE_TEXT} = m_src_brand;
 const {fromForm} = m_src_form;
 const {relaxedConstraints} = m_src_engine;
 const {verifyLicence, domainAllowed, PRODUCTION_PUBLIC_KEY} = m_src_licence;
-const VERSION = "0.4.0";
+const VERSION = "0.5.1";
 return {VERSION, mount, OPTION_NAMES, BADGE_URL, BADGE_TEXT, fromForm, relaxedConstraints, verifyLicence, domainAllowed, PRODUCTION_PUBLIC_KEY};
 })();
 const {VERSION, mount, OPTION_NAMES, BADGE_URL, BADGE_TEXT, fromForm, relaxedConstraints, verifyLicence, domainAllowed, PRODUCTION_PUBLIC_KEY} = m_loosen;

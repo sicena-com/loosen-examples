@@ -1,12 +1,12 @@
 Loosen widget, vendored for the examples. Refresh with scripts/sync-widget.sh.
 
-version : 0.4.0
+version : 0.5.1
 source  : a local checkout of the widget (dist/)
-commit  : 77062066425c1593d5152b001f002271fbc376aa
-synced  : 2026-10-28T18:33:05Z
+commit  : 8ea1ce12da8022d4d3c1641275a1041fa346dcc3
+synced  : 2026-10-28T22:28:35Z
 
-vendor/loosen.mjs        sha384-RsgosEvrYFJgGpv+GudH18VDOiurbUjFXowU/T5FG5SdNnuYRH274WXoZ11kqrjS
-vendor/loosen.iife.js    sha384-mB38ErZb7NKLbyy+q93L1/85/V/dIXbCLwTeRWC3YkwOObzo+w47rCWrAOJ/ZssN
+vendor/loosen.mjs        sha384-JAcKEGrFGtjXLtmBrsddZ+N57AgKbC4gsjlwoiwVDppqZPRFV9+bX71qJja6gW8T
+vendor/loosen.iife.js    sha384-bFHT/RF3rW5LudeoGop5Y5IOIN+qSlu+KU0ryL8lgwoawzzphe2XZC7mlVdM8S4w
 
 The published files are https://loosen.sicena.com/widget/v1/loosen.mjs and loosen.js (the classic script is the same file as loosen.iife.js).
 The widget is distributed under Loosen's terms (https://loosen.sicena.com/terms); see NOTICE.
