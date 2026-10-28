@@ -132,7 +132,7 @@ checks the panel, the chips and their result counts, clicks a chip and checks th
 checks the hover highlight, the keyboard flow (Enter on a chip, focus on Undo, Enter again), the server mode against the real `loosend` (including a wrong read key),
 and every option of the playground. 309 checks locally, which include every language on two pages (panel text, plural forms for 1, 2, 3 and 11 results, right to left, 390 px width without horizontal overflow, Japanese and Chinese), the live language switch on six pages, the French page and the shop with `?lang=`. (A chip never has 0 results, so the plural form for 0 is checked on the French page's own list: "0 appartement".) Set `BASE`, `SHOP`, `LOOSEND` to test other addresses.
 
-The same test runs against the hosted demo (138 checks: it also asserts that the licence removes the *Unlicensed copy* note, that `loosend` is only reached through
+The same test runs against the hosted demo (330 checks: it also asserts that the licence removes the *Unlicensed copy* note, that `loosend` is only reached through
 `/api/`, that admin and private routes are refused, that HEAD equals GET and that every response is `Cache-Control: no-cache`):
 
 ```sh
