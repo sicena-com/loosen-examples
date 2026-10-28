@@ -27,8 +27,7 @@ Open `http://localhost:8123/` after `./serve.sh`. Every page has buttons for two
 | 8 | Server mode with `loosend` (read key, CORS, `curl` loading) | `examples/server.html` | [4](https://loosen.sicena.com/docs/install#data), [server docs](https://loosen.sicena.com/docs/server) |
 | 9 | Options playground (all options, events, theming, texts, keyboard) | `examples/playground.html` | [6](https://loosen.sicena.com/docs/install#events), [7](https://loosen.sicena.com/docs/install#look), [9](https://loosen.sicena.com/docs/install#reference) |
 
-The React page turns the recipe of section 5.4, which the guide says was only tested against a stand-in for React, into a tested one: it
-runs in real React 18. Running it found a bug in the recipe as printed (see [Notes on the guide](#notes-on-the-guide)); the page uses the fixed version.
+The React page runs the recipe of section 5.4 in real React 18 (tested with Playwright, including Undo). Running it found a bug in the recipe as printed; it is fixed in the guide and the page uses the fixed version.
 
 ## Run it
 
@@ -128,10 +127,10 @@ Refresh the widget with `scripts/sync-widget.sh` (downloads the published files 
 
 ## Notes on the guide
 
-Found while building these examples (for the maintainers of the guide, not fixed here):
+Found while building these examples. Items 1 and 2 are fixed in the guide (and in the docs of `loosend`); they are kept here as the reason for the code in the pages:
 
-1. **5.4 React: Undo disappears.** `applyRelaxation` calls `setFilters`, which is asynchronous, so the widget's reading of `getConstraints()` right after the click still returns the *old* filters; the next `update()` then differs and the widget drops the Undo as "the visitor changed the filters". Fix used in `examples/react.html`: also write the new filters into the ref (`latest.current = next`) before `setFilters(next)`, in both `applyRelaxation` and `restoreConstraints`.
-2. **5.1 `fromForm` with a radio group.** A radio with value `""` as an "any" choice is read as `0` (`Number("")`), and radio values are strings unless the spec says `number: true`. These examples use yes/no radios with `number: true` and a small "any" button that unchecks them.
+1. **5.4 React: Undo disappeared** because `setFilters` is asynchronous: the new filters are written into the ref (`latest.current = next`) before `setFilters(next)`, in both `applyRelaxation` and `restoreConstraints`.
+2. **5.1 `fromForm` with a radio group.** A radio with value `""` is read as `0`, and radio values are strings unless the spec says `number: true`. These examples use yes/no radios with `number: true` and a small "any" button that unchecks them.
 3. The widget on a dark page needs `--loosen-bg`, `--loosen-border`, `--loosen-chip-*` (it inherits the text colour, but its background stays white).
 
 ## Licence
