@@ -6,6 +6,7 @@
 <title>React - Loosen examples</title>
 <link rel="stylesheet" href="../assets/examples.css">
 <script src="../config.js"></script>
+<script src="../assets/lang.js"></script>
 <script src="../assets/attributes.js"></script>
 <script src="../assets/results.js"></script>
 <script src="../vendor/react.production.min.js"></script>
@@ -50,7 +51,18 @@ const toFilters = constraints => ({
   towns: constraints.find(c => c.attr === "town")?.values ?? [],
 });
 
-function useLoosen(containerRef, filters, setFilters, minItems) {
+// the language of the page (<html lang>, set by the header switch) as React state: a change mounts the widget again
+function useLang() {
+  const [lang, setLang] = React.useState(document.documentElement.lang);
+  React.useEffect(() => {
+    const on = ev => setLang(ev.detail.lang);
+    document.addEventListener("loosen-lang", on);
+    return () => document.removeEventListener("loosen-lang", on);
+  }, []);
+  return lang;
+}
+
+function useLoosen(containerRef, filters, setFilters, minItems, lang) {
   const latest = React.useRef(filters);
   latest.current = filters;                          // getConstraints must read the newest filters
   const widget = React.useRef(null);
@@ -66,11 +78,12 @@ function useLoosen(containerRef, filters, setFilters, minItems) {
       applyRelaxation: (relaxation, constraints) => apply(toFilters(relaxedConstraints(relaxation, constraints))),
       restoreConstraints: constraints => apply(toFilters(constraints)),        // Undo
       minItems,                                      // explain when fewer than this many items match (guide 5.8)
+      lang,                                          // guide 7: "ca" "es" "en" "fr" "pt" "zh" "ja" "ar" (left out, the widget reads <html lang>)
     });
     return () => widget.current.destroy();
-  }, [minItems]);                                    // minItems is a mount option: mount again when it changes
+  }, [minItems, lang]);                              // minItems and lang are mount options: mount again when they change
 
-  React.useEffect(() => { widget.current?.update(); }, [filters, minItems]);
+  React.useEffect(() => { widget.current?.update(); }, [filters, minItems, lang]);
 }
 
 function Results({filters}) {
@@ -83,7 +96,8 @@ function App() {
   const [filters, setFilters] = React.useState(EMPTY);
   const [minItems, setMinItems] = React.useState(1);
   const ref = React.useRef(null);
-  useLoosen(ref, filters, setFilters, minItems);
+  const lang = useLang();
+  useLoosen(ref, filters, setFilters, minItems, lang);
   window.setReactFilters = setFilters;               // only for the preset buttons of this page
   window.setReactMinItems = setMinItems;
   const set = patch => setFilters({...filters, ...patch});

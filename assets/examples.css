@@ -33,7 +33,7 @@ input[type=checkbox], input[type=radio] { accent-color: var(--accent); }
 .slot { margin: 1rem 0; min-height: 0; } #results { margin-top: .5rem; }
 .count { font-weight: 650; margin: .2rem 0 .5rem; }
 .table-wrap { overflow-x: auto; } table { border-collapse: collapse; width: 100%; font-size: .9rem; }
-th, td { text-align: left; padding: .35rem .6rem; border-bottom: 1px solid var(--border); white-space: nowrap; } th { color: var(--muted); font-weight: 600; font-size: .8rem; }
+th, td { text-align: start; padding: .35rem .6rem; border-bottom: 1px solid var(--border); white-space: nowrap; } th { color: var(--muted); font-weight: 600; font-size: .8rem; }
 details.source { margin-top: 2rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: .6rem 1rem; }
 details.source summary { cursor: pointer; font-weight: 600; } pre { background: var(--code-bg); padding: .8rem 1rem; border-radius: 8px; overflow-x: auto; font-size: .8rem; line-height: 1.45; margin: .3rem 0 1rem; }
 code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .88em; } :not(pre) > code { background: var(--code-bg); padding: .08rem .3rem; border-radius: 4px; }
@@ -43,7 +43,7 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 .badge-note { display: inline-block; font-size: .72rem; border: 1px solid var(--border); border-radius: 999px; padding: 0 .5rem; color: var(--muted); margin-left: .4rem; vertical-align: middle; }
 .panel-demo { font-family: ui-monospace, monospace; font-size: .8rem; white-space: pre-wrap; }
 .status { padding: .5rem .8rem; border-radius: 8px; border: 1px solid var(--border); font-size: .9rem; margin: .6rem 0; } .status.bad { border-color: var(--warn); color: var(--warn); } .status.good { border-color: var(--ok); color: var(--ok); }
-.facet h3 { margin-top: 0; } .facet + .facet { margin-top: .8rem; } .facet label { display: flex; gap: .4rem; font-size: .9rem; } .facet label .n { margin-left: auto; color: var(--muted); }
+.facet h3 { margin-top: 0; } .facet + .facet { margin-top: .8rem; } .facet label { display: flex; gap: .4rem; font-size: .9rem; } .facet label .n { margin-inline-start: auto; color: var(--muted); }
 input[type=range] { width: 100%; accent-color: var(--accent); } .facet output { font-weight: 600; }
 .log { font: .75rem/1.4 ui-monospace, monospace; max-height: 28rem; overflow: auto; margin: 0; padding: 0; list-style: none; } .log li { padding: .25rem 0; border-bottom: 1px solid var(--border); word-break: break-word; } .log b { color: var(--accent); }
 .controls { display: grid; gap: .55rem; font-size: .9rem; } .controls label { display: grid; gap: .15rem; } .controls .row { display: flex; gap: .6rem; flex-wrap: wrap; }
@@ -54,3 +54,6 @@ a.btn { text-decoration: none; display: inline-block; color: var(--fg); } [aria-
    so these pages hand it the page colours through the documented custom properties (guide section 7). */
 #loosen { --loosen-bg: var(--surface); --loosen-border: var(--border); --loosen-muted: var(--muted); --loosen-accent: var(--accent); --loosen-accent-fg: var(--accent-fg); --loosen-chip-bg: var(--chip-bg); --loosen-chip-fg: var(--chip-fg); --loosen-warn: var(--warn); }
 .minitems { margin: .8rem 0 0; font-size: .92rem; } .minitems input { width: 4.5rem; }
+
+header.site .tools { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; } header.site .tools select { width: auto; max-width: 9rem; padding: .2rem .4rem; font-size: .85rem; }
+pre, code { direction: ltr; text-align: left; unicode-bidi: isolate; }

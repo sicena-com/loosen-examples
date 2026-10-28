@@ -25,8 +25,8 @@ const check = (name, ok, detail = "") => { results.push({name, ok}); console.log
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const browser = await chromium.launch();
-async function open(url, {allowErrors = false, route} = {}) {
-  const context = await browser.newContext({viewport: {width: 1280, height: 900}});
+async function open(url, {allowErrors = false, route, width = 1280} = {}) {
+  const context = await browser.newContext({viewport: {width, height: 900}});
   const page = await context.newPage();
   page.problems = [];
   page.on("console", m => { if (m.type() === "error") page.problems.push(`console: ${m.text()}`); });
@@ -73,8 +73,9 @@ async function flow(page, name, {presetIndex = 0, filterField = "max_rent", expe
 // ---- 0. landing ----
 {
   const page = await open(`${BASE}/`);
-  check("index: 9 variant cards", (await page.locator("ul.cards > li").count()) === 9);
-  check("index: header navigation present", (await page.locator("header.site nav a").count()) >= 9);
+  check("index: 10 variant cards", (await page.locator("ul.cards > li").count()) === 10);
+  check("index: header navigation present", (await page.locator("header.site nav a").count()) >= 10);
+  check("index: the language switch is offered on the page header", (await page.locator("#lang-switch option").count()) === 8);
   noProblems(page, "index");
   await page.context_.close();
 }
@@ -235,7 +236,7 @@ if (HOSTED) {
   }
   const get = await fetch(`${BASE}/`), head = await fetch(`${BASE}/`, {method: "HEAD"});
   check("hosted: HEAD / has the same status as GET /", get.status === head.status && head.status === 200);
-  for (const p of ["/", "/examples/react.html", "/assets/chrome.js", "/shop/", "/no-such-page"]) {
+  for (const p of ["/", "/examples/react.html", "/examples/francais.html", "/assets/chrome.js", "/assets/lang.js", "/shop/", "/no-such-page"]) {
     const r = await fetch(`${BASE}${p}`);
     check(`hosted: Cache-Control: no-cache on ${p} (${r.status})`, r.headers.get("cache-control") === "no-cache", r.headers.get("cache-control") ?? "none");
   }
@@ -316,7 +317,7 @@ for (const [file, name, trigger] of [
   await page.fill("[name=limit]", "8"); await page.locator("[name=limit]").dispatchEvent("change");
   await page.selectOption("[name=texts]", "fr"); await waitChips(page);
   check("playground: texts override (French)", /Pourquoi/.test(await page.locator("#loosen .why-toggle").innerText()) && /Un de ces changements/.test(await page.locator("#loosen .title").first().innerText()));
-  await page.selectOption("[name=texts]", "en");
+  await page.selectOption("[name=texts]", "none");
   await page.selectOption("[name=theme]", "dark"); await waitChips(page);
   const bg = await page.evaluate(() => getComputedStyle(document.querySelector("#loosen").firstElementChild.shadowRoot.querySelector(".panel") ?? document.body).backgroundColor);
   check(`playground: theming with --loosen-* custom properties (panel background ${bg})`, bg === "rgb(15, 23, 42)", bg);
@@ -344,6 +345,145 @@ for (const [file, name, trigger] of [
   check("playground: events log can be cleared", (await page.locator("#log li").count()) === 0);
   noProblems(page, "playground");
   await page.context_.close();
+}
+
+// ---- 11. French host page ----
+const strip = t => t.replace(/[⁦-⁩‎‏]/g, "").replace(/[  ]/g, " ");   // bidi isolates and no-break spaces
+{
+  const page = await open(`${BASE}/examples/francais.html`);
+  check("francais: <html lang=fr dir=ltr>", await page.evaluate(() => document.documentElement.lang === "fr" && document.documentElement.dir === "ltr"));
+  check("francais: the form and the switch are French", /Loyer max/.test(await page.locator("form#filters").innerText()) && (await page.locator("#lang-switch").inputValue()) === "fr");
+  await page.locator("button[data-preset]").nth(0).click(); await waitChips(page);
+  const labels = (await chips(page).allInnerTexts()).map(strip);
+  check(`francais: chips in French with CHF and a count (${labels.join(" / ")})`, labels.length >= 1 && labels.every(l => /\d+ résultats?$/.test(l)) && labels.some(l => /Loyer ≤ (CHF \d|\d+ CHF)/.test(l)), labels.join(" / "));
+  const panel = strip(await page.locator("#loosen .panel").first().innerText());
+  check("francais: panel title and Why? in French", /L'un de ces changements donne des résultats/.test(panel) && /Pourquoi \?/.test(panel), panel.slice(0, 120));
+  check("francais: the results list says '0 appartement' (singular form for 0)", /^0 appartement$/.test(strip(await countText(page))), await countText(page));
+  const before = await page.evaluate(() => JSON.stringify([...new FormData(document.getElementById("filters"))]));
+  await chips(page).first().hover(); await sleep(250);
+  check("francais: hover marks the fields (preview)", (await page.locator("[data-loosen-preview]").count()) > 0);
+  await chips(page).first().click();
+  await page.locator("#loosen .undo button").waitFor({timeout: 5000});
+  check("francais: 'Appliqué' and 'Annuler' after a click; the list is in French", /Appliqué/.test(await page.locator("#loosen .undo").innerText()) && /Annuler/.test(await page.locator("#loosen .undo button").innerText()) && /appartements?/.test(await countText(page)) && (await countNumber(page)) > 0);
+  check("francais: the results table has French headers and CHF", /Loyer/.test(await page.locator("#results thead").innerText()) && /CHF/.test(await page.locator("#results tbody").innerText()));
+  await page.locator("#loosen .undo button").click(); await waitChips(page);
+  check("francais: Undo restores the filters", (await page.evaluate(() => JSON.stringify([...new FormData(document.getElementById("filters"))]))) === before && (await countNumber(page)) === 0);
+  // minItems 3: French plural of 'résultat' and the 'au moins' text
+  await page.locator("button[data-min-items]").click(); await waitChips(page);
+  const p3 = strip(await page.locator("#loosen .panel").first().innerText());
+  check("francais: minItems 3 reads 'au moins 3 résultats'", /au moins 3 résultats/.test(p3), p3.slice(0, 160));
+  await page.locator("#min-items").fill("1"); await page.locator("#min-items").dispatchEvent("change");
+  await page.locator("button[data-preset]").nth(1).click(); await waitChips(page);
+  check("francais: the house override 'Retirer {what}' replaces the built-in 'Effacer'", labels.some(l => /^Retirer /.test(l)) && !labels.some(l => /^Effacer /.test(l)), labels.join(" / "));
+  // the French page can still be switched: to English
+  await page.selectOption("#lang-switch", "en"); await waitChips(page);
+  check("francais: switching to en shows English chips on the French host page", /results?$/.test(strip((await chips(page).first().innerText()))) && (await page.evaluate(() => document.documentElement.lang)) === "en");
+  noProblems(page, "francais");
+  await page.context_.close();
+}
+
+// ---- 12. the eight languages ----
+const LANGS = {
+  ca: {why: "Per què?", action: /Qualsevol d'aquests canvis/, one: "1 resultat", two: "2 resultats", three: "3 resultats", many: "11 resultats"},
+  es: {why: "¿Por qué?", action: /Cualquiera de estos cambios/, one: "1 resultado", two: "2 resultados", three: "3 resultados", many: "11 resultados"},
+  en: {why: "Why?", action: /Any of these changes gives results/, one: "1 result", two: "2 results", three: "3 results", many: "11 results"},
+  fr: {why: "Pourquoi ?", action: /L'un de ces changements donne des résultats/, one: "1 résultat", two: "2 résultats", three: "3 résultats", many: "11 résultats"},
+  pt: {why: "Por quê?", action: /Qualquer uma destas mudanças/, one: "1 resultado", two: "2 resultados", three: "3 resultados", many: "11 resultados"},
+  zh: {why: "为什么？", action: /任意一项调整/, one: "1 个结果", two: "2 个结果", three: "3 个结果", many: "11 个结果"},
+  ja: {why: "なぜ？", action: /次のどの変更でも/, one: "1件", two: "2件", three: "3件", many: "11件"},
+  ar: {why: "لماذا؟", action: /أي من هذه التعديلات/, one: "نتيجة واحدة", two: "نتيجتان", three: "3 نتائج", many: "11 نتيجة"},
+};
+// Plural forms with controlled counts: 1, 2, 3 and 11 items behind one constraint give chips "X ≤ 1 · N results". (A chip never has 0 results.)
+async function pluralTexts(page, lang) {
+  const out = {};
+  for (const [name, k] of [["one", 1], ["two", 2], ["three", 3], ["many", 11]]) {
+    out[name] = await page.evaluate(async ({lang, k}) => {
+      const {mount} = await import(new URL("vendor/loosen.mjs", document.baseURI.replace(/examples\/.*$/, "")).href);
+      document.getElementById("plural-test")?.remove();
+      const host = Object.assign(document.createElement("div"), {id: "plural-test"}); document.body.append(host);
+      const w = mount(host, {lang, attributes: {x: {kind: "numeric", label: "X"}}, data: Array.from({length: k}, (_, i) => ({id: `r${i}`, x: 1})),
+        getConstraints: () => [{attr: "x", op: "le", value: 0}], applyRelaxation() {}});
+      await w.update();
+      return host.querySelector(".panel > .chips > button.chip")?.textContent ?? host.firstElementChild?.shadowRoot?.querySelector(".panel > .chips > button.chip")?.textContent ?? null;
+    }, {lang, k});
+  }
+  return out;
+}
+for (const [lang, want] of Object.entries(LANGS)) {
+  for (const file of ["client-module", "facets-state"]) {
+    const page = await open(`${BASE}/examples/${file}.html?lang=${lang}`);
+    check(`lang ${lang} (${file}): <html lang> is ${lang} and dir is ${lang === "ar" ? "rtl" : "ltr"}`, await page.evaluate(([l, d]) => document.documentElement.lang === l && document.documentElement.dir === d, [lang, lang === "ar" ? "rtl" : "ltr"]));
+    await page.locator(file === "facets-state" ? "#preset-a" : "button[data-preset]").first().click(); await waitChips(page);
+    const text = strip(await page.locator("#loosen .panel").first().innerText());
+    check(`lang ${lang} (${file}): panel text is in the language`, want.action.test(text) && text.includes(want.why), text.slice(0, 120));
+    const chipTexts = (await chips(page).allInnerTexts()).map(strip);
+    check(`lang ${lang} (${file}): chips carry a count`, chipTexts.length > 0 && chipTexts.every(t => /\d|نتيجة واحدة|نتيجتان/.test(t)), chipTexts.join(" / "));
+    if (lang === "ar") {
+      const rtl = await page.evaluate(() => getComputedStyle(document.querySelector("#loosen").firstElementChild.shadowRoot.querySelector(".panel")).direction);
+      check(`lang ar (${file}): the panel is right to left`, rtl === "rtl", rtl);
+      const raw = (await chips(page).allInnerTexts()).join("");
+      check("lang ar: digits are Latin (no Arabic-Indic digits)", !/[٠-٩]/.test(raw));
+    }
+    if (file === "client-module") {
+      const plurals = await pluralTexts(page, lang);
+      for (const k of ["one", "two", "three", "many"]) check(`lang ${lang}: plural form for ${{one: 1, two: 2, three: 3, many: 11}[k]} is "${want[k]}"`, strip(plurals[k] ?? "").includes(want[k]), JSON.stringify(plurals[k]));
+      noProblems(page, `lang ${lang}`);
+    }
+    await page.context_.close();
+  }
+}
+{ // live switch on every kind of page: the widget is mounted again, <html lang dir> and ?lang= follow, no reload
+  for (const [file, preset] of [["client-module", "button[data-preset]"], ["classic-script", "button[data-preset]"], ["react", "#preset-a"], ["server", "button[data-preset]"], ["playground", "button[data-preset]"], ["by-hand", "button[data-preset]"]]) {
+    if (file === "server" && !loosendUp) continue;
+    const page = await open(`${BASE}/examples/${file}.html`);
+    if (file === "server") await page.locator("#status.good").waitFor({timeout: 5000});
+    await page.locator(preset).first().click(); await waitChips(page);
+    const marker = await page.evaluate(() => (window.__same = Math.random()));
+    for (const lang of ["ja", "ar", "en"]) {
+      await page.selectOption("#lang-switch", lang); await sleep(200); await waitChips(page);
+      const state = await page.evaluate(() => ({lang: document.documentElement.lang, dir: document.documentElement.dir, q: location.search, same: window.__same}));
+      const text = strip(await page.locator("#loosen .panel").first().innerText());
+      check(`live switch (${file}) to ${lang}: html lang/dir, ?lang=, same page, panel text`, state.lang === lang && state.dir === (lang === "ar" ? "rtl" : "ltr") && state.q.includes(`lang=${lang}`) && state.same === marker && LANGS[lang].action.test(text) && (await page.locator("#loosen > *").count()) === 1, JSON.stringify(state) + text.slice(0, 60));
+    }
+    if (file === "playground") {
+      await page.selectOption("[name=lang]", "fr"); await waitChips(page);
+      check("playground: the lang control sets the language of the page and the widget", (await page.evaluate(() => document.documentElement.lang)) === "fr" && (await page.locator("#lang-switch").inputValue()) === "fr" && /Pourquoi/.test(await page.locator("#loosen .why-toggle").innerText()));
+      await page.selectOption("[name=texts]", "fr"); await waitChips(page);
+      check("playground: texts demo French (whole set with plural objects)", /Pourquoi/.test(await page.locator("#loosen .why-toggle").innerText()) && (await chips(page).allInnerTexts()).every(t => /\d+ (de )?résultats?/.test(strip(t))));
+      await page.locator("[name=minItems]").fill("3"); await page.locator("[name=minItems]").dispatchEvent("change"); await page.locator("button[data-preset]").nth(0).click().catch(() => {});
+      await page.selectOption("[name=lang]", "ar"); await page.selectOption("[name=texts]", "ar"); await waitChips(page);
+      const ar = (await chips(page).allInnerTexts()).map(strip);
+      check(`playground: texts demo Arabic plurals (${ar.join(" / ")})`, ar.length > 0 && ar.every(t => /(نتيجة|نتائج|نتيجتان)/.test(t)), ar.join(" / "));
+      await page.selectOption("[name=locale]", "fr-CH");
+    }
+    noProblems(page, `live switch ${file}`);
+    await page.context_.close();
+  }
+}
+{ // the URL shop keeps ?lang= when a chip navigates and on the form submit
+  const page = await open(`${SHOP}/?max_price=400&metro=1&parking=1&lang=fr`);
+  await waitChips(page);
+  check("shop ?lang=fr: panel in French", /Pourquoi/.test(await page.locator("#loosen .why-toggle").innerText()) && (await page.evaluate(() => document.documentElement.lang)) === "fr");
+  const start = page.url();
+  await Promise.all([page.waitForURL(u => u.href !== start), chips(page).first().click()]);
+  check("shop: the relaxed URL keeps lang=fr", new URL(page.url()).searchParams.get("lang") === "fr", page.url());
+  const beforeSubmit = page.url();
+  await page.locator("input[name=minItems]").fill("2");
+  await Promise.all([page.waitForURL(u => u.href !== beforeSubmit), page.locator("form#filters button[type=submit]").click()]);
+  check("shop: the form submit keeps lang=fr", new URL(page.url()).searchParams.get("lang") === "fr", page.url());
+  await page.context_.close();
+}
+for (const file of ["client-module", "francais"]) { // phones: Arabic is right to left without horizontal overflow; Japanese and Chinese render
+  for (const lang of ["ar", "ja", "zh"]) {
+    const page = await open(`${BASE}/examples/${file}.html?lang=${lang}`, {width: 390});
+    await page.locator("button[data-preset]").first().click(); await waitChips(page);
+    const m = await page.evaluate(() => ({scroll: document.documentElement.scrollWidth, inner: innerWidth, rtl: getComputedStyle(document.querySelector("#loosen").firstElementChild.shadowRoot.querySelector(".panel")).direction,
+      font: "", w: document.querySelector("#loosen").firstElementChild.shadowRoot.querySelector(".panel .chips button")?.getBoundingClientRect().width}));
+    check(`phone 390px ${file} ?lang=${lang}: no horizontal overflow (${m.scroll} <= ${m.inner})`, m.scroll <= m.inner, JSON.stringify(m));
+    const text = strip(await page.locator("#loosen .panel").first().innerText());
+    check(`phone ${file} ?lang=${lang}: ${lang === "ar" ? "rtl panel with Arabic text" : "CJK text rendered"}`, lang === "ar" ? m.rtl === "rtl" && /[؀-ۿ]/.test(text) : lang === "ja" ? /[぀-ヿ]/.test(text) : /[一-鿿]/.test(text) && m.w > 20, text.slice(0, 80));
+    await page.context_.close();
+  }
 }
 
 // ---- 10. licence from config.js ----

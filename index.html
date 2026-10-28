@@ -6,6 +6,7 @@
 <title>Loosen examples</title>
 <link rel="stylesheet" href="assets/examples.css">
 <script src="config.js"></script>
+<script src="assets/lang.js"></script>
 <script type="module" src="assets/chrome.js"></script>
 </head>
 <body>
@@ -37,6 +38,11 @@
     <p class="small" style="margin-bottom:0">One click: <a href="examples/client-module.html?preset=minItems">client mode</a>, <a href="examples/form-fromform.html?preset=minItems">fromForm</a>, <a href="examples/by-hand.html?preset=minItems">by hand</a>; the buttons &ldquo;at least 3 results&rdquo; on the other pages do the same.</p>
   </section>
 
+  <section class="card" id="languages">
+    <h2 style="margin-top:0">The widget speaks eight languages</h2>
+    <p class="muted" style="margin:0">Every example page has a language switch in the header (Català, Español, English, Français, Português, 中文, 日本語, العربية). It sets <code>&lt;html lang dir&gt;</code> and <code>?lang=</code>, and the widget is mounted again in that language on the same data. Arabic is laid out right to left. Try <a href="examples/client-module.html?lang=ar&amp;preset=minItems">Arabic</a>, <a href="examples/client-module.html?lang=ja&amp;preset=minItems">Japanese</a>, or the <a href="examples/francais.html">fully French page</a>.</p>
+  </section>
+
   <h2>The variants</h2>
   <ul class="cards">
     <li><h3><span class="num">1</span>Client mode, ES module</h3><p><code>mount</code> from <code>vendor/loosen.mjs</code>. Data as an array, a URL or an async function.</p>
@@ -57,6 +63,8 @@
       <div class="go"><a href="examples/server.html">Open</a><a href="https://loosen.sicena.com/docs/server">Server docs</a></div></li>
     <li><h3><span class="num">9</span>Options playground</h3><p>Toggle every option live, watch the event stream, theme with CSS custom properties, override texts, keyboard notes.</p>
       <div class="go"><a href="examples/playground.html">Open</a><a href="https://loosen.sicena.com/docs/install#reference">Guide 9</a></div></li>
+    <li><h3><span class="num">10</span>Interface en français</h3><p>The Lausanne apartments with a French host page: attribute labels from the original French database, CHF in <code>fr-CH</code>, <code>lang: "fr"</code>, correct plurals.</p>
+      <div class="go"><a href="examples/francais.html">Ouvrir</a><a href="https://loosen.sicena.com/docs/install#language">Guide 7</a></div></li>
   </ul>
 
   <section class="card">

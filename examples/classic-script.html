@@ -6,6 +6,7 @@
 <title>Classic script - Loosen examples</title>
 <link rel="stylesheet" href="../assets/examples.css">
 <script src="../config.js"></script>
+<script src="../assets/lang.js"></script>
 <script src="../assets/attributes.js"></script>
 <script src="../assets/results.js"></script>
 <script type="module" src="../assets/chrome.js"></script>
@@ -47,18 +48,25 @@ fetch("../data/apartments.json").then(r => r.json()).then(rows => {
   });
   const showResults = () => Apt.render(document.getElementById("results"), rows, binding.getConstraints());
 
-  const widget = Loosen.mount(document.getElementById("loosen"), {
-    licence: window.LOOSEN_LICENCE,
-    attributes: APARTMENT_ATTRIBUTES,
-    data: rows,
-    getConstraints: binding.getConstraints,
-    applyRelaxation: (relaxation, constraints) => { binding.applyRelaxation(relaxation, constraints); showResults(); },
-    restoreConstraints: constraints => { binding.restoreConstraints(constraints); showResults(); },
-    onPreview: binding.onPreview,
-  });
+  let widget;
+  const start = () => {
+    widget?.destroy();                                       // no language setter: mount again when the header switch changes <html lang>
+    widget = Loosen.mount(document.getElementById("loosen"), {
+      licence: window.LOOSEN_LICENCE,
+      attributes: APARTMENT_ATTRIBUTES,
+      data: rows,
+      getConstraints: binding.getConstraints,
+      applyRelaxation: (relaxation, constraints) => { binding.applyRelaxation(relaxation, constraints); showResults(); },
+      restoreConstraints: constraints => { binding.restoreConstraints(constraints); showResults(); },
+      onPreview: binding.onPreview,
+      // no `lang` option: the widget reads <html lang> (guide 7). Add lang: "fr" to force a language.
+    });
+    widget.update();
+  };
+  document.addEventListener("loosen-lang", start);
   form.addEventListener("input", () => { showResults(); widget.update(); });
   showResults();
-  widget.update();
+  start();
 });
 </script>
 </body>

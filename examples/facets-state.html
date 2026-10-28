@@ -6,6 +6,7 @@
 <title>Facet state object - Loosen examples</title>
 <link rel="stylesheet" href="../assets/examples.css">
 <script src="../config.js"></script>
+<script src="../assets/lang.js"></script>
 <script src="../assets/attributes.js"></script>
 <script src="../assets/results.js"></script>
 <script type="module" src="../assets/chrome.js"></script>
@@ -84,6 +85,7 @@ const start = () => {
   widget.update();
 };
 minItems.addEventListener("change", start);
+document.addEventListener("loosen-lang", start);                // the language switch in the header: the widget has no setter, so mount again
 
 // ---- the rest is the demo's own facet UI ----
 const $ = id => document.getElementById(id);

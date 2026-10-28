@@ -6,6 +6,7 @@
 <title>Client mode, ES module - Loosen examples</title>
 <link rel="stylesheet" href="../assets/examples.css">
 <script src="../config.js"></script>
+<script src="../assets/lang.js"></script>
 <script src="../assets/attributes.js"></script>
 <script src="../assets/results.js"></script>
 <script type="module" src="../assets/chrome.js"></script>
@@ -87,10 +88,12 @@ const start = () => {
     restoreConstraints: constraints => { binding.restoreConstraints(constraints); showResults(); },   // turns on "Undo"
     onPreview: binding.onPreview,                                  // marks the fields a hovered chip would change
     minItems: Number(minItems.value) || 1,                       // explain when fewer than this many items match (guide 5.8)
+    // no `lang` option: the widget reads <html lang> (guide 7). Add lang: "fr" to force a language; locale: "fr-CH" changes number formatting.
   });
   widget.update();
 };
 minItems.addEventListener("change", start);
+document.addEventListener("loosen-lang", start);                // the language switch in the header: the widget has no setter, so mount again
 
 form.addEventListener("input", () => { showResults(); widget.update(); });
 showResults();

@@ -189,6 +189,7 @@ const shopHTML = `<!doctype html>
 <title>Server-rendered shop, filters in the URL - Loosen examples</title>
 <link rel="stylesheet" href="../assets/examples.css">
 <script src="../config.js"></script>
+<script src="../assets/lang.js"></script>
 <script src="../assets/attributes.js"></script>
 <script type="module" src="../assets/chrome.js"></script>
 </head>
@@ -261,17 +262,24 @@ const relaxedUrl = (relaxation, constraints) => {
   return ` + "`${location.pathname}?${query}`" + `;
 };
 
-const widget = mount(document.getElementById("loosen"), {
-  licence: window.LOOSEN_LICENCE,
-  attributes: APARTMENT_ATTRIBUTES,
-  data: "../data/apartments.json",                          // client mode, as a URL (a real shop would send its catalogue or use server mode)
-  getConstraints,
-  minItems: Number(new URLSearchParams(location.search).get("minItems")) || 1,   // ?minItems=3: explain when fewer than 3 apartments match (guide 5.8)
-  autoUpdate: false,                                     // the page is replaced: nothing to update
-  applyRelaxation: (relaxation, constraints) => location.assign(relaxedUrl(relaxation, constraints)),
-  // no restoreConstraints: the page reloads, so there is no panel to hold an Undo button. The Back button undoes it.
-});
-widget.update();
+let widget;
+const start = () => {
+  widget?.destroy();                                       // no language setter: mount again when the header switch changes <html lang>
+  widget = mount(document.getElementById("loosen"), {
+    licence: window.LOOSEN_LICENCE,
+    attributes: APARTMENT_ATTRIBUTES,
+    data: "../data/apartments.json",                          // client mode, as a URL (a real shop would send its catalogue or use server mode)
+    getConstraints,
+    minItems: Number(new URLSearchParams(location.search).get("minItems")) || 1,   // ?minItems=3: explain when fewer than 3 apartments match (guide 5.8)
+    // no lang option: the widget reads <html lang>, which the language switch sets from ?lang= (guide 7). relaxedUrl keeps ?lang= too.
+    autoUpdate: false,                                     // the page is replaced: nothing to update
+    applyRelaxation: (relaxation, constraints) => location.assign(relaxedUrl(relaxation, constraints)),
+    // no restoreConstraints: the page reloads, so there is no panel to hold an Undo button. The Back button undoes it.
+  });
+  widget.update();
+};
+document.addEventListener("loosen-lang", start);
+start();
 </script>
 </body>
 </html>

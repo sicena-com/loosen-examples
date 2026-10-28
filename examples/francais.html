@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interface en français - Loosen examples</title>
+<link rel="stylesheet" href="../assets/examples.css">
+<script src="../config.js"></script>
+<script src="../assets/lang.js"></script>
+<script src="../assets/attributes.js"></script>
+<script src="../assets/results.js"></script>
+<script type="module" src="../assets/chrome.js"></script>
+</head>
+<body data-title="Interface en français : les appartements de Lausanne"
+      data-lead="Les mêmes 186 appartements, avec une interface entièrement française : libellés des attributs comme dans la base d'origine (loyer, pièces, localité…), montants en CHF au format fr-CH, formulaire et tableau en français. Le widget reçoit lang: &quot;fr&quot; et locale: &quot;fr-CH&quot;."
+      data-guide="language" data-guide-label="7 Langue (Language)" data-host-lang="fr">
+<main>
+  <div class="presets">
+    <span>Essayez une recherche sans résultat :</span>
+    <button class="btn" data-preset='{"max_rent":"400","furnished":"0","metroM1":"1"}'>loyer &le; 400, meublé = non, métro M1 = oui</button>
+    <button class="btn" data-preset='{"max_rent":"600","max_centre":"5","parking":"1"}'>loyer &le; 600, centre &le; 5 min, parking = oui</button>
+    <button class="btn" data-preset='{"max_rent":"1200","min_rooms":"3"}' data-min-items="3">loyer &le; 1200, pièces &ge; 3, au moins 3 résultats</button>
+    <button class="btn" data-preset='{}'>réinitialiser</button>
+  </div>
+  <div class="layout two">
+    <section class="card">
+      <form id="filters" class="filters" style="grid-template-columns: 1fr 1fr" data-source="Le formulaire (HTML)">
+        <label class="field">Loyer max. (CHF) <input type="number" name="max_rent" min="0" step="10"></label>
+        <label class="field">Pièces min. <input type="number" name="min_rooms" min="1" step="1"></label>
+        <label class="field">Minutes max. jusqu'à l'université <input type="number" name="max_unil" min="0"></label>
+        <label class="field">Minutes max. jusqu'au centre <input type="number" name="max_centre" min="0"></label>
+        <fieldset class="wide"><legend>Localité (une parmi)</legend><div class="checks">
+          <label><input type="checkbox" name="town" value="Lausanne"> Lausanne</label>
+          <label><input type="checkbox" name="town" value="Renens"> Renens</label>
+          <label><input type="checkbox" name="town" value="Ecublens"> Ecublens</label>
+          <label><input type="checkbox" name="town" value="Prilly"> Prilly</label>
+          <label><input type="checkbox" name="town" value="Pully"> Pully</label>
+          <label><input type="checkbox" name="town" value="Préverenges"> Préverenges</label>
+          <label><input type="checkbox" name="town" value="Crissier"> Crissier</label>
+        </div></fieldset>
+        <fieldset class="wide"><legend>Équipement et environnement (oui / non / indifférent)</legend>
+        <div class="yn" role="group" aria-label="Meublé"><span>Meublé</span><label><input type="radio" name="furnished" value="1"> oui</label><label><input type="radio" name="furnished" value="0"> non</label><button type="button" data-clear="furnished" aria-label="Effacer Meublé">indifférent</button></div>
+        <div class="yn" role="group" aria-label="Cuisine"><span>Cuisine</span><label><input type="radio" name="kitchen" value="1"> oui</label><label><input type="radio" name="kitchen" value="0"> non</label><button type="button" data-clear="kitchen" aria-label="Effacer Cuisine">indifférent</button></div>
+        <div class="yn" role="group" aria-label="Salle de bain"><span>Salle de bain</span><label><input type="radio" name="bathroom" value="1"> oui</label><label><input type="radio" name="bathroom" value="0"> non</label><button type="button" data-clear="bathroom" aria-label="Effacer Salle de bain">indifférent</button></div>
+        <div class="yn" role="group" aria-label="Calme"><span>Calme</span><label><input type="radio" name="quiet" value="1"> oui</label><label><input type="radio" name="quiet" value="0"> non</label><button type="button" data-clear="quiet" aria-label="Effacer Calme">indifférent</button></div>
+        <div class="yn" role="group" aria-label="Balcon"><span>Balcon</span><label><input type="radio" name="balcony" value="1"> oui</label><label><input type="radio" name="balcony" value="0"> non</label><button type="button" data-clear="balcony" aria-label="Effacer Balcon">indifférent</button></div>
+        <div class="yn" role="group" aria-label="Vue"><span>Vue</span><label><input type="radio" name="view" value="1"> oui</label><label><input type="radio" name="view" value="0"> non</label><button type="button" data-clear="view" aria-label="Effacer Vue">indifférent</button></div>
+        <div class="yn" role="group" aria-label="Arrêt de bus à proximité"><span>Arrêt de bus à proximité</span><label><input type="radio" name="bus" value="1"> oui</label><label><input type="radio" name="bus" value="0"> non</label><button type="button" data-clear="bus" aria-label="Effacer Arrêt de bus à proximité">indifférent</button></div>
+        <div class="yn" role="group" aria-label="Parking"><span>Parking</span><label><input type="radio" name="parking" value="1"> oui</label><label><input type="radio" name="parking" value="0"> non</label><button type="button" data-clear="parking" aria-label="Effacer Parking">indifférent</button></div>
+        <div class="yn" role="group" aria-label="Métro M1"><span>Métro M1</span><label><input type="radio" name="metroM1" value="1"> oui</label><label><input type="radio" name="metroM1" value="0"> non</label><button type="button" data-clear="metroM1" aria-label="Effacer Métro M1">indifférent</button></div>
+        </fieldset>
+      </form>
+    </section>
+    <div>
+      <p class="minitems"><label>Proposer des changements quand il y a moins de <input type="number" id="min-items" min="1" step="1" value="1"> résultats</label> <span class="small">(1 : seulement quand rien ne correspond)</span></p>
+      <div id="loosen" class="slot" style="margin-top:0"></div>
+      <section class="card" id="results"></section>
+    </div>
+  </div>
+</main>
+
+<script type="module" id="code">
+import {mount, fromForm} from "../vendor/loosen.mjs";
+
+const rows = await (await fetch("../data/apartments.json")).json();
+const form = document.getElementById("filters");
+
+// Attributs : les libellés de la base d'origine (loyer, nbrpieces, localite, meuble, ...), les montants en CHF au format fr-CH.
+// Le widget ne connaît pas vos libellés : ils viennent d'ici (guide, section 3). Les 0/1 sont affichés « oui » / « non ».
+const chf = new Intl.NumberFormat("fr-CH", {style: "currency", currency: "CHF", maximumFractionDigits: 0});
+const ouiNon = v => (v ? "oui" : "non");
+const min = v => `${v} min`;
+const ATTRIBUTES = {
+  rent:            {kind: "numeric", label: "Loyer", format: v => chf.format(v)},
+  rooms:           {kind: "numeric", label: "Pièces"},
+  minutesToUnil:   {kind: "numeric", label: "Temps jusqu'à l'université", format: min},
+  minutesToCentre: {kind: "numeric", label: "Temps jusqu'au centre", format: min},
+  town:            {kind: "text",    label: "Localité"},
+  furnished:       {kind: "numeric", label: "Meublé", format: ouiNon},
+  kitchen:         {kind: "numeric", label: "Cuisine", format: ouiNon},
+  sharedKitchen:   {kind: "numeric", label: "Cuisine partagée", format: ouiNon},
+  fittedKitchen:   {kind: "numeric", label: "Cuisine agencée", format: ouiNon},
+  bathroom:        {kind: "numeric", label: "Salle de bain", format: ouiNon},
+  sharedBathroom:  {kind: "numeric", label: "Salle de bain partagée", format: ouiNon},
+  bathtub:         {kind: "numeric", label: "Baignoire", format: ouiNon},
+  quiet:           {kind: "numeric", label: "Calme", format: ouiNon},
+  balcony:         {kind: "numeric", label: "Balcon", format: ouiNon},
+  view:            {kind: "numeric", label: "Vue", format: ouiNon},
+  bus:             {kind: "numeric", label: "Arrêt de bus à proximité", format: ouiNon},
+  parking:         {kind: "numeric", label: "Parking", format: ouiNon},
+  metroM1:         {kind: "numeric", label: "Métro M1", format: ouiNon},
+  features:        {kind: "set",     label: "Atouts", format: v => ({"bus stop": "arrêt de bus", balcony: "balcon", quiet: "calme", view: "vue", "fitted kitchen": "cuisine agencée", bathtub: "baignoire"})[v] ?? v},
+};
+
+const binding = fromForm(form, {
+    max_rent:   {attr: "rent",            op: "le"},
+    min_rooms:  {attr: "rooms",           op: "ge"},
+    max_unil:   {attr: "minutesToUnil",   op: "le"},
+    max_centre: {attr: "minutesToCentre", op: "le"},
+    town:       {attr: "town",            op: "in"},
+    furnished:  {attr: "furnished", op: "eq", number: true},
+    kitchen:    {attr: "kitchen", op: "eq", number: true},
+    bathroom:   {attr: "bathroom", op: "eq", number: true},
+    quiet:      {attr: "quiet", op: "eq", number: true},
+    balcony:    {attr: "balcony", op: "eq", number: true},
+    view:       {attr: "view", op: "eq", number: true},
+    bus:        {attr: "bus", op: "eq", number: true},
+    parking:    {attr: "parking", op: "eq", number: true},
+    metroM1:    {attr: "metroM1", op: "eq", number: true},
+});
+
+// Le tableau de résultats est celui de la page (assets/results.js) : ici avec ses mots français.
+const showResults = () => Apt.render(document.getElementById("results"), rows, binding.getConstraints(), {max: 12, ui: Apt.UI.fr});
+
+const minItems = document.getElementById("min-items");           // « moins de N résultats » (guide 5.8)
+let widget;
+const start = () => {
+  widget?.destroy();                                         // minItems et lang sont des options de mount : on remonte le widget quand elles changent
+  const lang = LoosenLang.current();                         // « fr », sauf si le sélecteur de langue de l'en-tête (ou ?lang=) en choisit une autre
+  widget = mount(document.getElementById("loosen"), {
+    licence: window.LOOSEN_LICENCE,
+    attributes: ATTRIBUTES,
+    data: rows,
+    getConstraints: binding.getConstraints,
+    applyRelaxation: (relaxation, constraints) => { binding.applyRelaxation(relaxation, constraints); showResults(); },
+    restoreConstraints: constraints => { binding.restoreConstraints(constraints); showResults(); },
+    onPreview: binding.onPreview,
+    minItems: Number(minItems.value) || 1,
+    lang,                                                    // lang: "fr" : les textes du widget en français (« 0 résultat », « 1 résultat », « 3 résultats »)
+    locale: "fr-CH",                                         // locale : seulement les nombres (1’234) ; les chiffres restent toujours 0-9
+    ...(lang === "fr" ? {texts: {clear: "Retirer {what}"}} : {}),   // une retouche de style maison ; le reste est le français du widget
+  });
+  widget.update();
+};
+minItems.addEventListener("change", start);
+document.addEventListener("loosen-lang", start);
+form.addEventListener("input", () => { showResults(); widget.update(); });
+showResults();
+start();
+</script>
+</body>
+</html>

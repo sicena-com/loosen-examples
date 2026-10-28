@@ -27,14 +27,30 @@ Open <https://loosen.sicena.com/demo/> (hosted) or `http://localhost:8123/` afte
 | 6 | React 18 (vendored UMD, no JSX, no build) | `examples/react.html` | [Live](https://loosen.sicena.com/demo/examples/react.html) | [5.4](https://loosen.sicena.com/docs/install#react) |
 | 7 | Server-rendered shop, filters in the URL (Go, stdlib only) | `cmd/shop`, <http://localhost:8124/> | [Live](https://loosen.sicena.com/demo/shop/) | [5.5](https://loosen.sicena.com/docs/install#url) |
 | 8 | Server mode with `loosend` (read key, CORS, `curl` loading) | `examples/server.html` | [Live](https://loosen.sicena.com/demo/examples/server.html) | [4](https://loosen.sicena.com/docs/install#data), [server docs](https://loosen.sicena.com/docs/server) |
-| 9 | Options playground (all options, events, theming, texts, keyboard) | `examples/playground.html` | [Live](https://loosen.sicena.com/demo/examples/playground.html) | [6](https://loosen.sicena.com/docs/install#events), [7](https://loosen.sicena.com/docs/install#look), [9](https://loosen.sicena.com/docs/install#reference) |
+| 9 | Options playground (all options, `lang` and `locale`, events, theming, plural `texts` demos, keyboard) | `examples/playground.html` | [Live](https://loosen.sicena.com/demo/examples/playground.html) | [6](https://loosen.sicena.com/docs/install#events), [7](https://loosen.sicena.com/docs/install#look), [9](https://loosen.sicena.com/docs/install#reference) |
+| 10 | French host page: the Lausanne apartments with a French interface (`lang: "fr"`, `locale: "fr-CH"`, CHF, French plurals) | `examples/francais.html` | [Live](https://loosen.sicena.com/demo/examples/francais.html) | [7](https://loosen.sicena.com/docs/install#language) |
 
 The React page runs the recipe of section 5.4 in real React 18 (tested with Playwright, including Undo). Running it found a bug in the recipe as printed; it is fixed in the guide and the page uses the fixed version.
+
+## The widget speaks eight languages
+
+Widget 0.5 bundles `ca`, `es`, `en`, `fr`, `pt`, `zh`, `ja` and `ar` (right to left) in the one script ([guide 7](https://loosen.sicena.com/docs/install#language)).
+**Every example page has a language switch in its header.** It sets `<html lang>` and `<html dir>` (`rtl` for Arabic), writes `?lang=` in the URL (so a link
+opens the page in that language: `examples/client-module.html?lang=ar&preset=minItems`) and mounts the widget again; the data is the same, only the panel changes.
+The labels of the host forms stay English (the host's own text), except in [`examples/francais.html`](examples/francais.html), whose host page is French.
+
+How the pages do it, in three lines: no `lang` option is given, so the widget reads `<html lang>`; `assets/lang.js` (loaded first) sets it from `?lang=`;
+the switch dispatches a `loosen-lang` event and each page calls its `start()` again (the widget has no language setter, like `minItems`; React keeps the language
+in state and mounts in its effect). The shop keeps `?lang=` in the relaxed URLs and in the form. In the guide the option is `lang: "fr"`; a regional tag
+(`fr-CH`) is mapped to its language, and `locale` only changes how numbers are written. Digits stay Latin in Arabic. Plurals are CLDR: a counted text is a string
+or an object `{zero, one, two, few, many, other}` (`other` required); the playground has two demos of it: the whole French set, and the Arabic `results` / `more`.
+
+Text keys renamed in 0.5: `resultOne`/`resultMany` are now `results`; `actionOne`/`actionMany` are `action` + `actionMin`; `noneOne`/`noneMany` are `none` + `noneMin`.
 
 ## Not only zero results: `minItems`
 
 Loosen also acts when **fewer than N** items match, not only when nothing does ("show me at least 3 options"). Every suggestion then gives at least N results and
-says how many ([guide 5.8](https://loosen.sicena.com/docs/install#minitems)). Every variant has a field **Suggest changes when fewer than [N] results** (default 1, minimum 1;
+says how many ([guide 5.8](https://loosen.sicena.com/docs/install#minitems)). Every variant (and the French page) has a field **Suggest changes when fewer than [N] results** (default 1, minimum 1;
 at 1 the panel shows only for an empty result):
 
 | Variant | Where the field is | How it reaches the widget |
@@ -53,7 +69,7 @@ rooms field (React, server mode) use rent &le; 450, centre &le; 5 min, metro M1 
 Requirements: `python3` **or** Go (1.22+) for the static server. Docker is optional (loosend and the compose file). Nothing to install, nothing to build.
 
 ```sh
-./serve.sh                 # the static examples (variants 1 to 6 and 9) on http://localhost:8123/
+./serve.sh                 # the static examples (variants 1 to 6, 9 and 10) on http://localhost:8123/
 ./serve.sh --with-server   # also: the shop on :8124 and loosend on :8130 with the catalogue loaded (variants 7 and 8)
 ./serve.sh --stop          # stop what was started   (DETACH=1 ./serve.sh ... runs in the background)
 docker compose up          # the same three servers in containers, loosend loads data/apartments.csv with its feed
@@ -114,7 +130,7 @@ NODE_PATH=/path/to/node_modules node test/smoke.mjs      # a node_modules folder
 `test/smoke.mjs` (Playwright, Chromium) loads every page and fails on a console error, page error or failed request; for each variant it searches something impossible,
 checks the panel, the chips and their result counts, clicks a chip and checks that the filters, the list and the URL (shop) changed, uses Undo (or Back in the shop),
 checks the hover highlight, the keyboard flow (Enter on a chip, focus on Undo, Enter again), the server mode against the real `loosend` (including a wrong read key),
-and every option of the playground. 119 checks. Set `BASE`, `SHOP`, `LOOSEND` to test other addresses.
+and every option of the playground. 309 checks locally, which include every language on two pages (panel text, plural forms for 1, 2, 3 and 11 results, right to left, 390 px width without horizontal overflow, Japanese and Chinese), the live language switch on six pages, the French page and the shop with `?lang=`. (A chip never has 0 results, so the plural form for 0 is checked on the French page's own list: "0 appartement".) Set `BASE`, `SHOP`, `LOOSEND` to test other addresses.
 
 The same test runs against the hosted demo (138 checks: it also asserts that the licence removes the *Unlicensed copy* note, that `loosend` is only reached through
 `/api/`, that admin and private routes are refused, that HEAD equals GET and that every response is `Cache-Control: no-cache`):
@@ -133,11 +149,11 @@ dumps (not in this repository). Details and the field dictionary: [`data/README.
 
 ```
 index.html               landing page
-examples/                the pages 1-6, 8, 9
+examples/                the pages 1-6, 8, 9, 10 (francais.html)
 cmd/shop/                the server-rendered shop (7) and, with -landing, a static server
 cmd/front/               the hosted demo's public front: static allow-list, /shop/, only the explain call of loosend (deploy/)
 deploy/                  systemd units, build.sh, remote-setup.sh and README of the hosted demo; config/ holds its (SOPS) configuration
-assets/                  examples.css, chrome.js (header, Source block), attributes.js (the attribute declaration), results.js (the host's own search)
+assets/                  examples.css, chrome.js (header, language switch, Source block), lang.js (`<html lang dir>` from `?lang=`), attributes.js (the attribute declaration), results.js (the host's own search)
 data/                    the catalogue (json, csv, loosend items) and its README
 vendor/                  the Loosen widget (mjs and iife), React 18; SOURCE.txt, LICENSES/
 scripts/                 sync-widget.sh, run-loosend.sh, load-catalog.sh, static_server.py, gen-apartments/
@@ -146,7 +162,7 @@ test/smoke.mjs           the Playwright test
 serve.sh, docker-compose.yml, config.example.js
 ```
 
-Refresh the widget with `scripts/sync-widget.sh` (downloads the published files and writes `vendor/SOURCE.txt` with the SHA-384 hashes; `--from DIR` copies from a local build).
+Refresh the widget with `scripts/sync-widget.sh` (downloads the published v1 files, or `--from ~/dev/cbte2/widget/dist` for a local build; writes `vendor/SOURCE.txt` with the SHA-384 hashes; `--from DIR` copies from a local build).
 
 ## Troubleshooting
 

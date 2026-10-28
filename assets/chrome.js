@@ -6,7 +6,7 @@ const GUIDE = "https://loosen.sicena.com/docs/install";
 const PAGES = [
   ["examples/client-module.html", "1 Client mode, ES module"], ["examples/classic-script.html", "2 Classic script"],
   ["examples/form-fromform.html", "3 fromForm"], ["examples/by-hand.html", "4 By hand"], ["examples/facets-state.html", "5 Facet state"],
-  ["examples/react.html", "6 React"], ["examples/server.html", "8 Server mode"], ["examples/playground.html", "9 Playground"],
+  ["examples/react.html", "6 React"], ["examples/server.html", "8 Server mode"], ["examples/playground.html", "9 Playground"], ["examples/francais.html", "10 Français"],
 ];
 const el = (tag, attrs = {}, ...kids) => {
   const e = Object.assign(document.createElement(tag), attrs);
@@ -21,6 +21,7 @@ if (stored()) document.documentElement.dataset.theme = stored();
 
 // ---- header ----
 const body = document.body, d = body.dataset;
+const french = d.hostLang === "fr";                                 // francais.html: the host page itself is French
 const header = el("header", {className: "site"});
 const nav = el("nav", {"aria-label": "Examples"});
 nav.append(el("a", {href: new URL("index.html", base).href, className: "brand"}, "Loosen examples"));
@@ -37,7 +38,16 @@ if (location.host === shopUrl.host && location.pathname === shopUrl.pathname) sh
 nav.insertBefore(shopLink, nav.children[7]);
 const toggle = el("button", {type: "button", className: "theme", title: "Light / dark", "aria-label": "Switch light/dark theme"}, "Theme");
 toggle.onclick = () => setTheme((document.documentElement.dataset.theme ?? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === "dark" ? "light" : "dark");
-header.append(nav, toggle);
+// ---- language switch: the widget speaks eight languages; this sets <html lang dir>, ?lang= and re-mounts the widget (assets/lang.js) ----
+const picker = el("select", {id: "lang-switch", title: french ? "Langue du widget" : "Widget language", "aria-label": french ? "Langue du widget" : "Widget language"});
+for (const [code, name] of Object.entries(window.LoosenLang.LANGUAGES)) picker.append(el("option", {value: code, lang: code, selected: code === window.LoosenLang.current()}, name));
+picker.onchange = () => window.LoosenLang.set(picker.value);
+document.addEventListener("loosen-lang", ev => { picker.value = ev.detail.lang; });
+document.addEventListener("submit", ev => {                           // a GET form (the URL shop) keeps the chosen language in its URL
+  const form = ev.target;
+  if (form.method === "get" && new URLSearchParams(location.search).has("lang") && !form.elements.lang) form.append(el("input", {type: "hidden", name: "lang", value: window.LoosenLang.current()}));
+});
+header.append(nav, el("div", {className: "tools"}, el("span", {className: "small"}, french ? "Langue :" : "Widget language:"), picker, toggle));
 body.prepend(header);
 
 // ---- title, lead, guide link ----
@@ -45,7 +55,7 @@ const main = document.querySelector("main");
 if (d.title && main) {
   const intro = el("section", {className: "intro"}, el("h1", {}, d.title));
   if (d.lead) intro.append(el("p", {className: "lead"}, d.lead));
-  if (d.guide) intro.append(el("p", {className: "guide"}, "Guide: ", el("a", {href: `${GUIDE}#${d.guide}`, target: "_blank", rel: "noopener"}, d.guideLabel ?? d.guide)));
+  if (d.guide) intro.append(el("p", {className: "guide"}, french ? "Guide (en anglais) : " : "Guide: ", el("a", {href: `${GUIDE}#${d.guide}`, target: "_blank", rel: "noopener"}, d.guideLabel ?? d.guide)));
   main.prepend(intro);
 }
 
@@ -92,10 +102,10 @@ async function text(url) { const r = await fetch(url); if (!r.ok) throw new Erro
 const dedent = s => { const lines = s.replace(/^\n+|\s+$/g, "").split("\n"); const pad = Math.min(...lines.filter(l => l.trim()).map(l => l.match(/^ */)[0].length)); return lines.map(l => l.slice(pad)).join("\n"); };
 const code = document.getElementById("code");
 if (main && code) {
-  const details = el("details", {className: "source", id: "source"}, el("summary", {}, "Source: the code that integrates the widget"));
+  const details = el("details", {className: "source", id: "source"}, el("summary", {}, french ? "Source : le code qui intègre le widget" : "Source: the code that integrates the widget"));
   const add = (title, content, link) => details.append(el("h3", {}, title, link ? el("a", {href: link, className: "small"}, " (open file)") : null), el("pre", {}, el("code", {}, content)));
   for (const node of document.querySelectorAll("[data-source]")) add(node.dataset.source, dedent(node.tagName === "TEMPLATE" ? node.innerHTML : node.outerHTML));
-  add("This page's script", dedent(code.textContent));
+  add(french ? "Le script de cette page" : "This page's script", dedent(code.textContent));
   for (const file of (d.sourceExtra ?? "").split(/\s+/).filter(Boolean)) {
     try { add(file, await text(new URL(file, base)), new URL(file, base).href); } catch (e) { add(file, `(could not load: ${e.message})`); }
   }
