@@ -9,3 +9,7 @@ window.LOOSEN_SERVER = {endpoint: "http://localhost:8130", catalog: "apartments"
 
 // Server-rendered shop (cmd/shop) default address, used by the landing page link.
 window.LOOSEN_SHOP = "http://localhost:8124/";
+
+// The hosted demo (https://loosen.sicena.com/demo/) generates its own config.js at deploy time with a licence key, window.LOOSEN_HOSTED = true and
+// RELATIVE addresses: LOOSEN_SHOP = "shop/" and LOOSEN_SERVER.endpoint = "api". Relative values are resolved against the root of the examples,
+// so the same pages work at "/" (locally) and under "/demo/" (hosted). See deploy/README.md.

@@ -29,8 +29,11 @@ for (const [path, label] of PAGES) {
   if (location.pathname.endsWith(path)) a.setAttribute("aria-current", "page");
   nav.append(a);
 }
-const shopLink = el("a", {href: window.LOOSEN_SHOP ?? "http://localhost:8124/"}, "7 URL shop");
-if (location.port === new URL(shopLink.href).port && location.pathname === "/") shopLink.setAttribute("aria-current", "page");
+// config.js sets LOOSEN_SHOP and LOOSEN_SERVER. Relative values are resolved against the root of the examples, so the hosted demo (served under
+// https://loosen.sicena.com/demo/) says "shop/" and "api"; a local run uses the ports 8124 and 8130.
+const shopLink = el("a", {href: new URL(window.LOOSEN_SHOP ?? "http://localhost:8124/", base).href}, "7 URL shop");
+const shopUrl = new URL(shopLink.href, location.href);
+if (location.host === shopUrl.host && location.pathname === shopUrl.pathname) shopLink.setAttribute("aria-current", "page");
 nav.insertBefore(shopLink, nav.children[7]);
 const toggle = el("button", {type: "button", className: "theme", title: "Light / dark", "aria-label": "Switch light/dark theme"}, "Theme");
 toggle.onclick = () => setTheme((document.documentElement.dataset.theme ?? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === "dark" ? "light" : "dark");

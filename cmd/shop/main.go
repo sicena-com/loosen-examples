@@ -2,6 +2,9 @@
 // the URL (?max_price=400&filter_town=Pully), every change reloads the page, and the results are rendered on the server, like a
 // WooCommerce or Shopify collection page. The Loosen widget is mounted on the page; when nothing matches it reads the filters from
 // location.search and applies a relaxation by navigating to the relaxed URL.
+// Every URL in the page is relative ("../assets/...", an empty form action, "?" for reset), so the page works at the root of this
+// program (http://localhost:8124/, where "../" stays at the root) and hosted at <prefix>/shop/ behind cmd/front, whose static files
+// are one level up (https://loosen.sicena.com/demo/shop/ -> /demo/assets/...).
 //
 //	go run ./cmd/shop -addr 127.0.0.1:8124 -root .
 package main
@@ -180,10 +183,10 @@ const shopHTML = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Server-rendered shop, filters in the URL - Loosen examples</title>
-<link rel="stylesheet" href="assets/examples.css">
-<script src="config.js"></script>
-<script src="assets/attributes.js"></script>
-<script type="module" src="assets/chrome.js"></script>
+<link rel="stylesheet" href="../assets/examples.css">
+<script src="../config.js"></script>
+<script src="../assets/attributes.js"></script>
+<script type="module" src="../assets/chrome.js"></script>
 </head>
 <body data-title="Server-rendered shop: filters in the URL"
       data-lead="A classic WooCommerce-like flow. The filters are query parameters, the Go server renders the results, every change reloads the page. The widget reads the filters from location.search and applies a relaxation by navigating to the relaxed URL; the browser's Back button is the Undo."
@@ -193,10 +196,10 @@ const shopHTML = `<!doctype html>
     <span>Try a conflicting search:</span>
     <a class="btn" href="?max_price=400&amp;metro=1&amp;parking=1">rent &le; 400, metro M1, parking</a>
     <a class="btn" href="?max_price=600&amp;max_centre=5&amp;parking=1">rent &le; 600, centre &le; 5 min, parking</a>
-    <a class="btn" href="/">reset</a>
+    <a class="btn" href="?">reset</a>
   </div>
   <section class="card">
-    <form id="filters" class="filters" method="get" action="/">
+    <form id="filters" class="filters" method="get" action="">
       <label class="field">Max rent (CHF) <input type="number" name="max_price" min="0" step="10" value="{{if .F.MaxPrice}}{{.F.MaxPrice}}{{end}}"></label>
       <label class="field">Min rooms <input type="number" name="min_rooms" min="1" value="{{if .F.MinRooms}}{{.F.MinRooms}}{{end}}"></label>
       <label class="field">Max minutes to the centre <input type="number" name="max_centre" min="0" value="{{if .F.MaxCentre}}{{.F.MaxCentre}}{{end}}"></label>
@@ -220,7 +223,7 @@ const shopHTML = `<!doctype html>
 </main>
 
 <script type="module" id="code">
-import {mount} from "./vendor/loosen.mjs";
+import {mount} from "../vendor/loosen.mjs";
 
 // The URL parameters of the shop, as constraints (guide 5.5). WooCommerce uses max_price and filter_<attribute>;
 // Shopify storefront filtering uses filter.v.price.lte and filter.v.option.<name>: adapt this table to your theme.
@@ -255,7 +258,7 @@ const relaxedUrl = (relaxation, constraints) => {
 const widget = mount(document.getElementById("loosen"), {
   licence: window.LOOSEN_LICENCE,
   attributes: APARTMENT_ATTRIBUTES,
-  data: "data/apartments.json",                          // client mode, as a URL (a real shop would send its catalogue or use server mode)
+  data: "../data/apartments.json",                          // client mode, as a URL (a real shop would send its catalogue or use server mode)
   getConstraints,
   autoUpdate: false,                                     // the page is replaced: nothing to update
   applyRelaxation: (relaxation, constraints) => location.assign(relaxedUrl(relaxation, constraints)),

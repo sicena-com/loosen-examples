@@ -1,0 +1,24 @@
+[Unit]
+Description=Loosen examples, hosted demo: the front (static examples, shop/, api/ explain only), reached through loosen.sicena.com/demo/
+After=network-online.target loosen-examples-loosend.service loosen-examples-shop.service
+Wants=network-online.target loosen-examples-loosend.service loosen-examples-shop.service
+
+[Service]
+Type=simple
+User=loosen-examples
+Group=loosen-examples
+WorkingDirectory={{BASE}}/current
+EnvironmentFile={{BASE}}/current/.env
+# A new release: restart the two private services too, so they run the new binaries and reload the catalog (Wants=, not Requires=:
+# restarting them must not restart this unit). "+" = run as root.
+ExecStartPre=+/bin/systemctl restart loosen-examples-loosend.service loosen-examples-shop.service
+ExecStart={{BASE}}/current/bin/front -addr 127.0.0.1:8081 -root {{BASE}}/current/www -loosend http://127.0.0.1:8130 -shop http://127.0.0.1:8124 -hops 1
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

@@ -2,6 +2,10 @@
 //
 //   NODE_PATH=/path/to/node_modules node test/smoke.mjs        (any node_modules folder that has `playwright` and a Chromium)
 //   ./serve.sh --with-server  must be running (DETACH=1 ./serve.sh --with-server), or set BASE / SHOP / LOOSEND.
+//   The hosted demo:   BASE_URL=https://loosen.sicena.com/demo node test/smoke.mjs
+//     BASE_URL sets BASE, the shop is at $BASE_URL/shop, loosend is reached through $BASE_URL/api (loosend itself is not reachable, and
+//     that is checked: its /health and admin routes must NOT answer). The hosted demo has a licence key, so the "Unlicensed copy" note
+//     must be absent (LICENSED=0 / LICENSED=1 override the default: unlicensed for a local run, licensed with BASE_URL).
 //
 // Checks per page: no console error, no page error, no failed request; a conflicting search shows the panel with chips and counts;
 // a chip updates the filters and the result list; Undo restores them; hover highlights the fields (fromForm).
@@ -9,9 +13,12 @@ import {createRequire} from "node:module";
 const require = createRequire(import.meta.url);        // CommonJS resolution honours NODE_PATH, ES imports do not
 const {chromium} = require("playwright");
 
-const BASE = process.env.BASE ?? "http://localhost:8123";
-const SHOP = process.env.SHOP ?? "http://localhost:8124";
-const LOOSEND = process.env.LOOSEND ?? "http://localhost:8130";
+const HOSTED = !!process.env.BASE_URL;
+const BASE = (process.env.BASE_URL ?? process.env.BASE ?? "http://localhost:8123").replace(/\/$/, "");
+const SHOP = (process.env.SHOP ?? (HOSTED ? `${BASE}/shop` : "http://localhost:8124")).replace(/\/$/, "");
+const LOOSEND = HOSTED ? null : (process.env.LOOSEND ?? "http://localhost:8130");   // hosted: loosend is private, only $BASE/api/... explain is public
+const LICENSED = (process.env.LICENSED ?? (HOSTED ? "1" : "0")) === "1";
+const READ_KEY = process.env.READ_KEY ?? "examples-read-key";
 
 const results = [];
 const check = (name, ok, detail = "") => { results.push({name, ok}); console.log(`${ok ? "PASS" : "FAIL"}  ${name}${ok ? "" : "  " + detail}`); };
@@ -45,7 +52,7 @@ async function flow(page, name, {presetIndex = 0, filterField = "max_rent", expe
   const labels = await chips(page).allInnerTexts();
   check(`${name}: conflicting search shows ${n} chips with result counts`, n >= 1 && labels.every(l => /\d+ results?/.test(l)), labels.join(" / "));
   check(`${name}: the result list is empty before the click`, (await countNumber(page)) === 0, await countText(page));
-  if (expectUnlicensed) check(`${name}: "Unlicensed copy" note shown without a licence`, (await page.locator("#loosen .unlicensed").count()) === 1);
+  if (expectUnlicensed) check(`${name}: "Unlicensed copy" note ${LICENSED ? "absent with the licence" : "shown without a licence"}`, (await page.locator("#loosen .unlicensed").count()) === (LICENSED ? 0 : 1));
   const before = await page.evaluate(() => JSON.stringify([...new FormData(document.getElementById("filters"))]));
   await chips(page).first().hover();
   await sleep(250);
@@ -188,18 +195,26 @@ for (const [i, label] of [[0, "rent<=400, furnished=no, metro=yes"], [1, "rent<=
 
 // ---- 8. server mode against a real local loosend ----
 let loosendUp = false;
-try { loosendUp = (await fetch(`${LOOSEND}/health`)).ok; } catch { /* not running */ }
+if (HOSTED) loosendUp = true;
+else try { loosendUp = (await fetch(`${LOOSEND}/health`)).ok; } catch { /* not running */ }
 if (!loosendUp) check("server mode: loosend reachable (start with ./serve.sh --with-server)", false, LOOSEND);
 else {
   const page = await open(`${BASE}/examples/server.html`);
   await page.locator("#status.good").waitFor({timeout: 5000});
   check("server: the probe of the explain endpoint succeeds (CORS, read key, catalog)", /answers at/.test(await page.locator("#status").innerText()));
-  const health = await (await fetch(`${LOOSEND}/health`)).json();
-  check("server: loosend holds the 186 apartments", health.items === 186 && health.catalogs.apartments.items === 186);
+  if (!HOSTED) {
+    const health = await (await fetch(`${LOOSEND}/health`)).json();
+    check("server: loosend holds the 186 apartments", health.items === 186 && health.catalogs.apartments.items === 186);
+  } else {
+    const explain = await fetch(`${BASE}/api/v1/catalogs/apartments/explain`, {method: "POST", headers: {"Content-Type": "application/json", "X-Loosen-Key": READ_KEY}, body: JSON.stringify({constraints: [{attr: "rent", op: "le", value: 400}, {attr: "metroM1", op: "eq", value: 1}, {attr: "parking", op: "eq", value: 1}]})});
+    const body = await explain.json();
+    check("server (hosted): loosend explains through $BASE/api over 186 items", explain.status === 200 && body.items === 186 && body.matching === 0 && body.relaxations.length > 0, JSON.stringify(body).slice(0, 200));
+  }
   const reqs = [];
   page.on("request", r => { if (r.url().includes("/explain")) reqs.push(r); });
   await flow(page, "server (loosend)", {presetIndex: 0, expectUnlicensed: true});
-  check("server: the widget POSTs /explain with the read key header", reqs.length > 0 && reqs[0].method() === "POST" && reqs[0].headers()["x-loosen-key"] === "examples-read-key");
+  check("server: the widget POSTs /explain with the read key header", reqs.length > 0 && reqs[0].method() === "POST" && reqs[0].headers()["x-loosen-key"] === READ_KEY);
+  if (HOSTED) check(`server (hosted): the browser calls the same origin (${reqs[0]?.url()})`, reqs[0]?.url() === `${BASE}/api/v1/catalogs/apartments/explain`, reqs[0]?.url());
   noProblems(page, "server");
   await page.context_.close();
   // wrong read key -> the widget says the explanation is unavailable, the page keeps working
@@ -208,6 +223,22 @@ else {
   await bad.locator("#loosen .note").waitFor({timeout: 5000});
   check("server: a wrong read key gives 'explanation is unavailable', not a broken page", /unavailable/.test(await bad.locator("#loosen .note").innerText()));
   await bad.context_.close();
+}
+
+// ---- 8b. hosted only: nothing private is reachable from outside ----
+if (HOSTED) {
+  const status = async (method, path, init = {}) => (await fetch(`${BASE}${path}`, {method, redirect: "manual", ...init})).status;
+  for (const [m, p] of [["GET", "/api/health"], ["GET", "/api/v1/catalogs"], ["GET", "/api/v1/catalogs/apartments/items"], ["GET", "/api/v1/catalogs/apartments"], ["PUT", "/api/v1/catalogs/apartments/items"],
+    ["PUT", "/api/v1/catalogs/apartments/read-key"], ["DELETE", "/api/v1/catalogs/apartments"], ["POST", "/api/v1/catalogs/apartments/refresh"], ["GET", "/api/v1/admin/keys"], ["GET", "/.env"], ["GET", "/deploy/start-post.sh"], ["GET", "/bin/front"]]) {
+    const code = await status(m, p, m === "GET" ? {} : {headers: {Authorization: "Bearer examples-admin-key-0000", Origin: new URL(BASE).origin}, body: "{}"});
+    check(`hosted: ${m} ${p} is refused (${code})`, code === 404 || code === 405 || code === 403 || code === 401);
+  }
+  const get = await fetch(`${BASE}/`), head = await fetch(`${BASE}/`, {method: "HEAD"});
+  check("hosted: HEAD / has the same status as GET /", get.status === head.status && head.status === 200);
+  for (const p of ["/", "/examples/react.html", "/assets/chrome.js", "/shop/", "/no-such-page"]) {
+    const r = await fetch(`${BASE}${p}`);
+    check(`hosted: Cache-Control: no-cache on ${p} (${r.status})`, r.headers.get("cache-control") === "no-cache", r.headers.get("cache-control") ?? "none");
+  }
 }
 
 // ---- 9. playground ----

@@ -11,7 +11,7 @@
 <script type="module" src="../assets/chrome.js"></script>
 </head>
 <body data-title="Server mode with loosend"
-      data-lead="The analysis runs on your own Loosen server; the browser only sends the filters (debounced, one small request per search) and the catalogue never reaches the visitor. Needs a local loosend: ./serve.sh --with-server."
+      data-lead="The analysis runs on your own Loosen server; the browser only sends the filters (debounced, one small request per search) and the catalogue never reaches the visitor. Locally it needs a loosend: ./serve.sh --with-server (the hosted demo has one behind its api/ route)."
       data-guide="data" data-guide-label="4 Give it data, or a server (server mode)" data-source-extra="assets/attributes.js scripts/run-loosend.sh scripts/load-catalog.sh">
 <main>
   <div id="status" class="status" role="status">Checking the server...</div>
@@ -51,7 +51,7 @@ import {mount, fromForm} from "../vendor/loosen.mjs";
 const query = new URLSearchParams(location.search);
 const defaults = window.LOOSEN_SERVER ?? {endpoint: "http://localhost:8130", catalog: "apartments", key: "examples-read-key"};
 const server = {
-  endpoint: query.get("endpoint") ?? defaults.endpoint,           // where loosend listens
+  endpoint: new URL(query.get("endpoint") ?? defaults.endpoint, new URL("../", location.href)).href.replace(/\/$/, ""),   // where loosend listens (a relative value is resolved against the examples root)
   catalog: query.get("catalog") ?? defaults.catalog,
   key: query.get("key") ?? defaults.key,                         // the catalog's read key, sent as X-Loosen-Key (optional)
 };

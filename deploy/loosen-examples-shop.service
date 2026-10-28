@@ -1,0 +1,19 @@
+[Unit]
+Description=Loosen examples, hosted demo: the server-rendered shop (private, 127.0.0.1 only; served at /shop/ by the front)
+After=network-online.target
+
+[Service]
+Type=simple
+User=loosen-examples
+Group=loosen-examples
+WorkingDirectory={{BASE}}/current
+ExecStart={{BASE}}/current/bin/shop -addr 127.0.0.1:8124 -root {{BASE}}/current/www
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

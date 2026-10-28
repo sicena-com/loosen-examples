@@ -9,7 +9,6 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 VERSION=1.0.0
 IMAGE="ghcr.io/sicena-com/loosend:$VERSION"
-SITE=https://loosen.sicena.com/downloads/loosend/v1
 PORT="${LOOSEND_PORT:-8130}"
 export LOOSEND_ADMIN_KEY="${LOOSEND_ADMIN_KEY:-examples-admin-key-0000}"
 PAGE_ORIGIN="${PAGE_ORIGIN:-http://localhost:8123}"
@@ -35,22 +34,7 @@ if [ "$mode" = docker ]; then
   docker run -d --rm --name "$NAME" -p "127.0.0.1:$PORT:8080" \
     -e LOOSEND_ADMIN_KEY -e LOOSEND_ALLOWED_ORIGINS -e "LOOSEND_LICENCE=${LOOSEND_LICENCE:-}" "$IMAGE" >/dev/null
 else
-  os="$(uname -s | tr A-Z a-z)"; arch="$(uname -m)"
-  case "$arch" in x86_64|amd64) arch=amd64;; aarch64|arm64) arch=arm64;; *) echo "no loosend build for $arch" >&2; exit 1;; esac
-  case "$os" in linux|darwin) ;; *) echo "on $os download the archive by hand: https://loosen.sicena.com/downloads" >&2; exit 1;; esac
-  archive="loosend-$VERSION-$os-$arch.tar.gz"
-  if [ ! -x ".bin/loosend-$VERSION" ]; then
-    tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
-    curl -fsSL "$SITE/$archive" -o "$tmp/$archive"; curl -fsSL "$SITE/SHA256SUMS" -o "$tmp/SHA256SUMS"
-    # verify the archive against the published SHA256SUMS before running anything from it
-    expected="$(awk -v f="$archive" '$2 == f {print $1}' "$tmp/SHA256SUMS")"
-    [ -n "$expected" ] || { echo "$archive is not listed in SHA256SUMS" >&2; exit 1; }
-    if command -v sha256sum >/dev/null; then actual="$(sha256sum "$tmp/$archive" | cut -d' ' -f1)"; else actual="$(shasum -a 256 "$tmp/$archive" | cut -d' ' -f1)"; fi
-    [ "$expected" = "$actual" ] || { echo "SHA-256 mismatch for $archive (expected $expected, got $actual)" >&2; exit 1; }
-    echo "SHA-256 verified: $actual  $archive"
-    mkdir "$tmp/x"; tar -xzf "$tmp/$archive" -C "$tmp/x"
-    install -m 0755 "$(find "$tmp/x" -type f -name loosend | head -1)" ".bin/loosend-$VERSION"
-  fi
+  if [ ! -x ".bin/loosend-$VERSION" ]; then scripts/fetch-loosend.sh "$VERSION" "$(uname -s | tr A-Z a-z)" "$(uname -m)" ".bin/loosend-$VERSION"; fi
   LOOSEND_DATA_DIR="$RUN/loosend-data" nohup ".bin/loosend-$VERSION" --addr "127.0.0.1:$PORT" > "$RUN/loosend.log" 2>&1 &
   echo $! > "$RUN/loosend.pid"
 fi

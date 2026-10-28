@@ -1,0 +1,27 @@
+[Unit]
+Description=Loosen examples, hosted demo: loosend (private, 127.0.0.1 only)
+After=network-online.target
+
+[Service]
+Type=simple
+User=loosen-examples
+Group=loosen-examples
+WorkingDirectory={{BASE}}/current
+# LOOSEND_ADMIN_KEY and LOOSEND_ALLOWED_ORIGINS (the demo origin only) come from the generated .env
+EnvironmentFile={{BASE}}/current/.env
+Environment=LOOSEND_ADDR=127.0.0.1:8130
+# The front is the only client and sends the visitor's address in X-Forwarded-For, so loosend's per-IP rate limit sees visitors, not the front.
+Environment=LOOSEND_TRUST_PROXY=true
+Environment=LOOSEND_DATA_DIR={{BASE}}/shared/loosend-data
+ExecStart={{BASE}}/current/bin/loosend
+ExecStartPost={{BASE}}/current/deploy/start-post.sh
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths={{BASE}}/shared/loosend-data
+
+[Install]
+WantedBy=multi-user.target

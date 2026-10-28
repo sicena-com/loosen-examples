@@ -16,6 +16,8 @@
     <p class="guide">Guide: <a href="https://loosen.sicena.com/docs/install">loosen.sicena.com/docs/install</a> &middot; Server: <a href="https://loosen.sicena.com/docs/server">/docs/server</a> &middot; Data: <a href="data/README.md">data/README.md</a></p>
   </section>
 
+  <p id="hosted-note" class="small" hidden>This is the live demo of the <a href="https://github.com/sicena-com/loosen-examples">loosen-examples</a> repository: the same pages you get with <code>./serve.sh --with-server</code>, plus a real <code>loosend</code> behind <code>/api/</code> for variant 8. Fork or clone the repository to run them on your machine.</p>
+
   <section class="card">
     <h2 style="margin-top:0">What you will see</h2>
     <p class="muted" style="margin-top:0">Search rent &le; 500 CHF, minutes to the centre &le; 5, in Lausanne or Pully, with a balcony and a view: no result. The panel under your filters says (this is the real output of page 5):</p>
@@ -43,9 +45,9 @@
       <div class="go"><a href="examples/facets-state.html">Open</a><a href="https://loosen.sicena.com/docs/install#facets">Guide 5.3</a></div></li>
     <li><h3><span class="num">6</span>React 18</h3><p>A real React app (vendored UMD, no build, no JSX): <code>useLoosen</code> with a ref and an effect. Tested.</p>
       <div class="go"><a href="examples/react.html">Open</a><a href="https://loosen.sicena.com/docs/install#react">Guide 5.4</a></div></li>
-    <li><h3><span class="num">7</span>Server-rendered shop <span class="badge-note">needs ./serve.sh --with-server</span></h3><p>Filters in the URL, results rendered by a Go program (stdlib only), relaxations navigate to the new URL. Back is the Undo.</p>
-      <div class="go"><a id="shop-link" href="http://localhost:8124/">Open (port 8124)</a><a href="https://loosen.sicena.com/docs/install#url">Guide 5.5</a></div></li>
-    <li><h3><span class="num">8</span>Server mode: <code>loosend</code> <span class="badge-note">needs ./serve.sh --with-server</span></h3><p>The analysis runs on your Loosen server; read key, CORS, catalogue loaded with <code>curl</code>. Docker, binary or compose.</p>
+    <li><h3><span class="num">7</span>Server-rendered shop <span class="badge-note local-only">needs ./serve.sh --with-server</span></h3><p>Filters in the URL, results rendered by a Go program (stdlib only), relaxations navigate to the new URL. Back is the Undo.</p>
+      <div class="go"><a id="shop-link" href="http://localhost:8124/">Open</a><a href="https://loosen.sicena.com/docs/install#url">Guide 5.5</a></div></li>
+    <li><h3><span class="num">8</span>Server mode: <code>loosend</code> <span class="badge-note local-only">needs ./serve.sh --with-server</span></h3><p>The analysis runs on your Loosen server; read key, CORS, catalogue loaded with <code>curl</code>. Docker, binary or compose.</p>
       <div class="go"><a href="examples/server.html">Open</a><a href="https://loosen.sicena.com/docs/server">Server docs</a></div></li>
     <li><h3><span class="num">9</span>Options playground</h3><p>Toggle every option live, watch the event stream, theme with CSS custom properties, override texts, keyboard notes.</p>
       <div class="go"><a href="examples/playground.html">Open</a><a href="https://loosen.sicena.com/docs/install#reference">Guide 9</a></div></li>
@@ -57,7 +59,11 @@
   </section>
 </main>
 <script>
-  document.getElementById("shop-link").href = window.LOOSEN_SHOP ?? "http://localhost:8124/";
+  document.getElementById("shop-link").href = new URL(window.LOOSEN_SHOP ?? "http://localhost:8124/", document.baseURI).href;
+  if (window.LOOSEN_HOSTED) {       // the hosted demo (config.js is generated at deploy): the local-run hints do not apply
+    for (const note of document.querySelectorAll(".local-only")) note.remove();
+    document.getElementById("hosted-note").hidden = false;
+  }
   document.getElementById("licence-note").innerHTML = window.LOOSEN_LICENCE
     ? "A licence key is set in <code>config.js</code>: the widget checks it in your browser (offline)."
     : "No licence key: everything works, the widget shows a small <em>Unlicensed copy</em> note and limits client mode to 1,000 items (the 186 apartments fit). For a clean look get a free 30-day trial key at <a href=\"https://loosen.sicena.com/trial\">loosen.sicena.com/trial</a> and paste it into <code>config.js</code>; see the README.";

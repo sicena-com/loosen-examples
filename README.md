@@ -1,5 +1,7 @@
 # Loosen examples
 
+[![Live demo](https://img.shields.io/badge/Live%20demo-loosen.sicena.com%2Fdemo-0a7)](https://loosen.sicena.com/demo/) **[Try every variant live: loosen.sicena.com/demo/](https://loosen.sicena.com/demo/)** (the same pages as here, with a real `loosend` for server mode; nothing to install).
+
 Runnable examples of every way to integrate [Loosen](https://loosen.sicena.com), on one real catalogue: **186 apartments in the Lausanne area**.
 
 Loosen explains empty search results. When a visitor's filters return nothing, the widget shows which filters conflict and what to
@@ -12,20 +14,20 @@ It is one script and a few lines of glue; the analysis runs in the browser or on
 
 ## The variants
 
-Open `http://localhost:8123/` after `./serve.sh`. Every page has buttons for two searches that find nothing, a collapsible
+Open <https://loosen.sicena.com/demo/> (hosted) or `http://localhost:8123/` after `./serve.sh`. Every page has buttons for two searches that find nothing, a collapsible
 **Source** block with the exact integration code, and a link to the matching guide section.
 
-| # | Variant | Page | Guide section |
-|---|---|---|---|
-| 1 | Client mode, ES module (`mount`; data as array, URL, async function) | `examples/client-module.html` | [2](https://loosen.sicena.com/docs/install#script), [4](https://loosen.sicena.com/docs/install#data) |
-| 2 | Classic `<script>` (`window.Loosen`) | `examples/classic-script.html` | [2](https://loosen.sicena.com/docs/install#script) |
-| 3 | Plain HTML form with `fromForm` (the thesis form) | `examples/form-fromform.html` | [5.1](https://loosen.sicena.com/docs/install#form) |
-| 4 | By hand: `getConstraints`, `applyRelaxation`, `restoreConstraints`, `onPreview` | `examples/by-hand.html` | [5.2](https://loosen.sicena.com/docs/install#manual) |
-| 5 | Facet state object (Algolia / Typesense / Meilisearch style) | `examples/facets-state.html` | [5.3](https://loosen.sicena.com/docs/install#facets) |
-| 6 | React 18 (vendored UMD, no JSX, no build) | `examples/react.html` | [5.4](https://loosen.sicena.com/docs/install#react) |
-| 7 | Server-rendered shop, filters in the URL (Go, stdlib only) | `cmd/shop`, <http://localhost:8124/> | [5.5](https://loosen.sicena.com/docs/install#url) |
-| 8 | Server mode with `loosend` (read key, CORS, `curl` loading) | `examples/server.html` | [4](https://loosen.sicena.com/docs/install#data), [server docs](https://loosen.sicena.com/docs/server) |
-| 9 | Options playground (all options, events, theming, texts, keyboard) | `examples/playground.html` | [6](https://loosen.sicena.com/docs/install#events), [7](https://loosen.sicena.com/docs/install#look), [9](https://loosen.sicena.com/docs/install#reference) |
+| # | Variant | Page | Live | Guide section |
+|---|---|---|---|---|
+| 1 | Client mode, ES module (`mount`; data as array, URL, async function) | `examples/client-module.html` | [Live](https://loosen.sicena.com/demo/examples/client-module.html) | [2](https://loosen.sicena.com/docs/install#script), [4](https://loosen.sicena.com/docs/install#data) |
+| 2 | Classic `<script>` (`window.Loosen`) | `examples/classic-script.html` | [Live](https://loosen.sicena.com/demo/examples/classic-script.html) | [2](https://loosen.sicena.com/docs/install#script) |
+| 3 | Plain HTML form with `fromForm` (the thesis form) | `examples/form-fromform.html` | [Live](https://loosen.sicena.com/demo/examples/form-fromform.html) | [5.1](https://loosen.sicena.com/docs/install#form) |
+| 4 | By hand: `getConstraints`, `applyRelaxation`, `restoreConstraints`, `onPreview` | `examples/by-hand.html` | [Live](https://loosen.sicena.com/demo/examples/by-hand.html) | [5.2](https://loosen.sicena.com/docs/install#manual) |
+| 5 | Facet state object (Algolia / Typesense / Meilisearch style) | `examples/facets-state.html` | [Live](https://loosen.sicena.com/demo/examples/facets-state.html) | [5.3](https://loosen.sicena.com/docs/install#facets) |
+| 6 | React 18 (vendored UMD, no JSX, no build) | `examples/react.html` | [Live](https://loosen.sicena.com/demo/examples/react.html) | [5.4](https://loosen.sicena.com/docs/install#react) |
+| 7 | Server-rendered shop, filters in the URL (Go, stdlib only) | `cmd/shop`, <http://localhost:8124/> | [Live](https://loosen.sicena.com/demo/shop/) | [5.5](https://loosen.sicena.com/docs/install#url) |
+| 8 | Server mode with `loosend` (read key, CORS, `curl` loading) | `examples/server.html` | [Live](https://loosen.sicena.com/demo/examples/server.html) | [4](https://loosen.sicena.com/docs/install#data), [server docs](https://loosen.sicena.com/docs/server) |
+| 9 | Options playground (all options, events, theming, texts, keyboard) | `examples/playground.html` | [Live](https://loosen.sicena.com/demo/examples/playground.html) | [6](https://loosen.sicena.com/docs/install#events), [7](https://loosen.sicena.com/docs/install#look), [9](https://loosen.sicena.com/docs/install#reference) |
 
 The React page runs the recipe of section 5.4 in real React 18 (tested with Playwright, including Undo). Running it found a bug in the recipe as printed; it is fixed in the guide and the page uses the fixed version.
 
@@ -78,6 +80,13 @@ cp config.example.js config.js     # serve.sh does this for you; config.js is gi
 Every page reads `window.LOOSEN_LICENCE` from it. (I could not test a real trial key from here; the test only proves that the value of `config.js` reaches the widget.)
 For `loosend` set `LOOSEND_LICENCE` in the environment; without it the server runs in evaluation mode (1,000 items).
 
+## The hosted demo
+
+<https://loosen.sicena.com/demo/> is this repository, deployed: the static pages, the shop at `/demo/shop/` and a real `loosend` 1.0.0 (SHA-256 verified) behind
+`/demo/api/` (the only public route is `POST /demo/api/v1/catalogs/apartments/explain`; no admin route, no `/health` of loosend, no data directory is reachable).
+The pages use relative URLs, so they work at `/` here and at `/demo/` there. It has a production licence key for the host `loosen.sicena.com`, injected through
+`config.js` at deploy time only. How it is built and run: [`deploy/README.md`](deploy/README.md).
+
 ## Tests
 
 ```sh
@@ -89,6 +98,13 @@ NODE_PATH=/path/to/node_modules node test/smoke.mjs      # a node_modules folder
 checks the panel, the chips and their result counts, clicks a chip and checks that the filters, the list and the URL (shop) changed, uses Undo (or Back in the shop),
 checks the hover highlight, the keyboard flow (Enter on a chip, focus on Undo, Enter again), the server mode against the real `loosend` (including a wrong read key),
 and every option of the playground. 119 checks. Set `BASE`, `SHOP`, `LOOSEND` to test other addresses.
+
+The same test runs against the hosted demo (138 checks: it also asserts that the licence removes the *Unlicensed copy* note, that `loosend` is only reached through
+`/api/`, that admin and private routes are refused, that HEAD equals GET and that every response is `Cache-Control: no-cache`):
+
+```sh
+BASE_URL=https://loosen.sicena.com/demo NODE_PATH=/path/to/node_modules node test/smoke.mjs
+```
 
 ## How the data was made
 
@@ -102,6 +118,8 @@ dumps (not in this repository). Details and the field dictionary: [`data/README.
 index.html               landing page
 examples/                the pages 1-6, 8, 9
 cmd/shop/                the server-rendered shop (7) and, with -landing, a static server
+cmd/front/               the hosted demo's public front: static allow-list, /shop/, only the explain call of loosend (deploy/)
+deploy/                  systemd units, build.sh, remote-setup.sh and README of the hosted demo; config/ holds its (SOPS) configuration
 assets/                  examples.css, chrome.js (header, Source block), attributes.js (the attribute declaration), results.js (the host's own search)
 data/                    the catalogue (json, csv, loosend items) and its README
 vendor/                  the Loosen widget (mjs and iife), React 18; SOURCE.txt, LICENSES/
