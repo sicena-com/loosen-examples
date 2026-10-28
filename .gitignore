@@ -1,0 +1,10 @@
+# local licence (a free trial key you paste yourself)
+config.js
+# SQL dumps used by the generator (not published)
+/source/
+# downloaded binaries and local state
+/.bin/
+/.run/
+node_modules/
+*.log
+.DS_Store

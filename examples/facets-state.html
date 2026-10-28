@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Facet state object - Loosen examples</title>
+<link rel="stylesheet" href="../assets/examples.css">
+<script src="../config.js"></script>
+<script src="../assets/attributes.js"></script>
+<script src="../assets/results.js"></script>
+<script type="module" src="../assets/chrome.js"></script>
+</head>
+<body data-title="A facet state object (Typesense, Meilisearch, Algolia style)"
+      data-lead="Faceted-search UIs keep their filters in one state object. Write the mapping state to constraints once, in both directions, and let relaxedConstraints() do the rest. Nothing here is a form: the facets and sliders render from the state."
+      data-guide="facets" data-guide-label="5.3 A facet state object" data-source-extra="assets/attributes.js">
+<main>
+  <div class="presets">
+    <span>Try a conflicting search:</span>
+    <button class="btn" id="preset-a">rent &le; 400, Pully, balcony + view</button>
+    <button class="btn" id="preset-b">rent &le; 500, centre &le; 5 min, quiet + view + balcony</button>
+    <button class="btn" id="preset-reset">reset</button>
+  </div>
+  <div class="layout two">
+    <aside class="card" id="facets" aria-label="Facets">
+      <div class="facet"><h3>Max rent: <output id="rent-out"></output></h3><input type="range" id="rent" min="300" max="2110" step="10" aria-label="Max rent"></div>
+      <div class="facet"><h3>Max minutes to the centre: <output id="centre-out"></output></h3><input type="range" id="centre" min="0" max="49" step="1" aria-label="Max minutes to the centre"></div>
+      <div class="facet"><h3>Min rooms: <output id="rooms-out"></output></h3><input type="range" id="rooms" min="1" max="4" step="1" aria-label="Min rooms"></div>
+      <div class="facet"><h3>Town</h3><div id="town"></div></div>
+      <div class="facet"><h3>Features (all of)</h3><div id="features"></div></div>
+    </aside>
+    <div>
+      <div id="loosen" class="slot" style="margin-top:0"></div>
+      <section class="card" id="results"></section>
+    </div>
+  </div>
+</main>
+
+<script type="module" id="code">
+import {mount, relaxedConstraints} from "../vendor/loosen.mjs";
+
+const rows = await (await fetch("../data/apartments.json")).json();
+
+// Your search UI's state: facet value lists and numeric ranges. A slider at its far end means "no limit" (null).
+const emptyState = () => ({facets: {town: [], features: []}, ranges: {rent: {}, minutesToCentre: {}, rooms: {}}});
+const state = emptyState();
+
+// state -> constraints
+const toConstraints = s => [
+  ...(s.ranges.rent.max != null ? [{attr: "rent", op: "le", value: s.ranges.rent.max}] : []),
+  ...(s.ranges.minutesToCentre.max != null ? [{attr: "minutesToCentre", op: "le", value: s.ranges.minutesToCentre.max}] : []),
+  ...(s.ranges.rooms.min != null ? [{attr: "rooms", op: "ge", value: s.ranges.rooms.min}] : []),
+  ...(s.facets.town.length ? [{attr: "town", op: "in", values: s.facets.town}] : []),
+  ...(s.facets.features.length ? [{attr: "features", op: "allOf", values: s.facets.features}] : []),
+];
+// constraints -> state (the inverse; fed with the constraints after a relaxation, or the previous ones for Undo)
+const toState = constraints => {
+  const next = emptyState();
+  for (const c of constraints) {
+    if (c.attr === "rent") next.ranges.rent.max = c.value;
+    if (c.attr === "minutesToCentre") next.ranges.minutesToCentre.max = c.value;
+    if (c.attr === "rooms") next.ranges.rooms.min = c.value;
+    if (c.attr === "town") next.facets.town = c.values;
+    if (c.attr === "features") next.facets.features = c.values;
+  }
+  return next;
+};
+
+const widget = mount(document.getElementById("loosen"), {
+  licence: window.LOOSEN_LICENCE, attributes: APARTMENT_ATTRIBUTES, data: rows,
+  getConstraints: () => toConstraints(state),
+  applyRelaxation: (relaxation, constraints) => {
+    Object.assign(state, toState(relaxedConstraints(relaxation, constraints)));   // relaxedConstraints = the list after the click
+    render();                                                                      // your own re-search / re-render goes here
+  },
+  restoreConstraints: constraints => { Object.assign(state, toState(constraints)); render(); },   // Undo
+});
+
+// ---- the rest is the demo's own facet UI ----
+const $ = id => document.getElementById(id);
+const countBy = key => { const m = new Map(); for (const r of rows) for (const v of [].concat(r[key])) m.set(v, (m.get(v) ?? 0) + 1); return [...m].sort((a, b) => b[1] - a[1]); };
+const checkbox = (group, value, n) => `<label><input type="checkbox" data-group="${group}" value="${value}"> ${value} <span class="n">${n}</span></label>`;
+$("town").innerHTML = countBy("town").slice(0, 8).map(([v, n]) => checkbox("town", v, n)).join("");
+$("features").innerHTML = countBy("features").map(([v, n]) => checkbox("features", v, n)).join("");
+
+function render() {   // state -> UI, then the results
+  const set = (id, out, value, max, text) => { $(id).value = value ?? max; $(out).textContent = value == null ? "any" : text(value); };
+  set("rent", "rent-out", state.ranges.rent.max, 2110, v => `${v} CHF`);
+  set("centre", "centre-out", state.ranges.minutesToCentre.max, 49, v => `${v} min`);
+  set("rooms", "rooms-out", state.ranges.rooms.min ?? null, 1, v => `${v}+`);
+  for (const box of document.querySelectorAll("[data-group]")) box.checked = state.facets[box.dataset.group].includes(box.value);
+  Apt.render($("results"), rows, toConstraints(state));
+}
+const onUser = () => {   // the visitor's own change: update the state, render, tell the widget
+  state.ranges.rent.max = +$("rent").value < 2110 ? +$("rent").value : undefined;
+  state.ranges.minutesToCentre.max = +$("centre").value < 49 ? +$("centre").value : undefined;
+  state.ranges.rooms.min = +$("rooms").value > 1 ? +$("rooms").value : undefined;
+  for (const group of ["town", "features"]) state.facets[group] = [...document.querySelectorAll(`[data-group=${group}]:checked`)].map(b => b.value);
+  render();
+  widget.update();
+};
+$("facets").addEventListener("input", onUser);
+render();
+widget.update();
+
+// preset buttons of this page
+const preset = (id, s) => $(id).addEventListener("click", () => { Object.assign(state, toState(s)); render(); widget.update(); });
+preset("preset-a", [{attr: "rent", op: "le", value: 400}, {attr: "town", op: "in", values: ["Pully"]}, {attr: "features", op: "allOf", values: ["balcony", "view"]}]);
+preset("preset-b", [{attr: "rent", op: "le", value: 500}, {attr: "minutesToCentre", op: "le", value: 5}, {attr: "features", op: "allOf", values: ["quiet", "view", "balcony"]}]);
+preset("preset-reset", []);
+</script>
+</body>
+</html>

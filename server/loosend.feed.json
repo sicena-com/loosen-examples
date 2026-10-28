@@ -1,0 +1,19 @@
+{
+  "allowedOrigins": ["http://localhost:8123", "http://127.0.0.1:8123"],
+  "catalogs": {
+    "apartments": {
+      "readKey": "examples-read-key",
+      "schema": {"attributes": [
+        {"name": "rent", "kind": "numeric"}, {"name": "rooms", "kind": "numeric"},
+        {"name": "minutesToUnil", "kind": "numeric"}, {"name": "minutesToCentre", "kind": "numeric"},
+        {"name": "town", "kind": "text"},
+        {"name": "furnished", "kind": "numeric"}, {"name": "kitchen", "kind": "numeric"}, {"name": "sharedKitchen", "kind": "numeric"}, {"name": "fittedKitchen", "kind": "numeric"},
+        {"name": "bathroom", "kind": "numeric"}, {"name": "sharedBathroom", "kind": "numeric"}, {"name": "bathtub", "kind": "numeric"},
+        {"name": "quiet", "kind": "numeric"}, {"name": "balcony", "kind": "numeric"}, {"name": "view", "kind": "numeric"}, {"name": "bus", "kind": "numeric"},
+        {"name": "parking", "kind": "numeric"}, {"name": "metroM1", "kind": "numeric"},
+        {"name": "features", "kind": "set"}
+      ]},
+      "feed": {"source": "/examples/data/apartments.csv", "format": "csv", "intervalSeconds": 3600, "mode": "replace", "idColumn": "id"}
+    }
+  }
+}

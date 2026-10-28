@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>React - Loosen examples</title>
+<link rel="stylesheet" href="../assets/examples.css">
+<script src="../config.js"></script>
+<script src="../assets/attributes.js"></script>
+<script src="../assets/results.js"></script>
+<script src="../vendor/react.production.min.js"></script>
+<script src="../vendor/react-dom.production.min.js"></script>
+<script type="module" src="../assets/chrome.js"></script>
+</head>
+<body data-title="React"
+      data-lead="A real React 18 application (vendored UMD builds, no JSX, no build step). The widget owns a DOM node: create it in an effect, keep the latest filters in a ref, call update() when the filters change. This recipe of the guide was only tested against a stand-in for React; this page runs it in React itself."
+      data-guide="react" data-guide-label="5.4 React" data-source-extra="assets/attributes.js">
+<main>
+  <div class="presets">
+    <span>Try a conflicting search:</span>
+    <button class="btn" id="preset-a">rent &le; 400, metro M1, parking</button>
+    <button class="btn" id="preset-b">rent &le; 600, centre &le; 5 min, parking</button>
+    <button class="btn" id="preset-reset">reset</button>
+  </div>
+  <div id="app"></div>
+</main>
+
+<script type="module" id="code">
+import {mount, relaxedConstraints} from "../vendor/loosen.mjs";
+
+const rows = await (await fetch("../data/apartments.json")).json();
+const h = React.createElement;                       // no JSX: no build step
+const TOWNS = ["Lausanne", "Renens", "Prilly", "Pully"];
+const EMPTY = {maxRent: null, maxCentre: null, metro: false, parking: false, towns: []};
+
+// React state <-> constraints. toFilters is the inverse of toConstraints.
+const toConstraints = f => [
+  ...(f.maxRent != null ? [{attr: "rent", op: "le", value: f.maxRent}] : []),
+  ...(f.maxCentre != null ? [{attr: "minutesToCentre", op: "le", value: f.maxCentre}] : []),
+  ...(f.metro ? [{attr: "metroM1", op: "eq", value: 1}] : []),
+  ...(f.parking ? [{attr: "parking", op: "eq", value: 1}] : []),
+  ...(f.towns.length ? [{attr: "town", op: "in", values: f.towns}] : []),
+];
+const toFilters = constraints => ({
+  maxRent: constraints.find(c => c.attr === "rent")?.value ?? null,
+  maxCentre: constraints.find(c => c.attr === "minutesToCentre")?.value ?? null,
+  metro: constraints.some(c => c.attr === "metroM1"),
+  parking: constraints.some(c => c.attr === "parking"),
+  towns: constraints.find(c => c.attr === "town")?.values ?? [],
+});
+
+function useLoosen(containerRef, filters, setFilters) {
+  const latest = React.useRef(filters);
+  latest.current = filters;                          // getConstraints must read the newest filters
+  const widget = React.useRef(null);
+  const apply = next => { latest.current = next; setFilters(next); };
+
+  React.useEffect(() => {
+    widget.current = mount(containerRef.current, {
+      licence: window.LOOSEN_LICENCE, attributes: APARTMENT_ATTRIBUTES, data: rows,
+      autoUpdate: false,                             // React re-renders and the effect below calls update(): no second analysis
+      getConstraints: () => toConstraints(latest.current),
+      // setFilters is asynchronous: write the new filters into `latest` too, so getConstraints() already returns them when the widget
+      // reads it right after this function (it compares that reading with the later update(); otherwise the Undo would be dropped)
+      applyRelaxation: (relaxation, constraints) => apply(toFilters(relaxedConstraints(relaxation, constraints))),
+      restoreConstraints: constraints => apply(toFilters(constraints)),        // Undo
+    });
+    return () => widget.current.destroy();
+  }, []);
+
+  React.useEffect(() => { widget.current?.update(); }, [filters]);
+}
+
+function Results({filters}) {
+  const ref = React.useRef(null);
+  React.useEffect(() => { Apt.render(ref.current, rows, toConstraints(filters)); });   // the shop's own result list
+  return h("section", {className: "card", id: "results", ref});
+}
+
+function App() {
+  const [filters, setFilters] = React.useState(EMPTY);
+  const ref = React.useRef(null);
+  useLoosen(ref, filters, setFilters);
+  window.setReactFilters = setFilters;               // only for the preset buttons of this page
+  const set = patch => setFilters({...filters, ...patch});
+  const num = v => (v === "" ? null : Number(v));
+  return h("div", null,
+    h("section", {className: "card"}, h("form", {className: "filters", onSubmit: e => e.preventDefault()},
+      h("label", {className: "field"}, "Max rent (CHF)", h("input", {type: "number", name: "max_rent", value: filters.maxRent ?? "", onChange: e => set({maxRent: num(e.target.value)})})),
+      h("label", {className: "field"}, "Max minutes to the centre", h("input", {type: "number", name: "max_centre", value: filters.maxCentre ?? "", onChange: e => set({maxCentre: num(e.target.value)})})),
+      h("label", null, h("input", {type: "checkbox", name: "metroM1", checked: filters.metro, onChange: e => set({metro: e.target.checked})}), " Metro M1"),
+      h("label", null, h("input", {type: "checkbox", name: "parking", checked: filters.parking, onChange: e => set({parking: e.target.checked})}), " Parking"),
+      h("fieldset", {className: "wide"}, h("legend", null, "Town"), h("div", {className: "checks"}, TOWNS.map(t =>
+        h("label", {key: t}, h("input", {type: "checkbox", name: "town", value: t, checked: filters.towns.includes(t),
+          onChange: e => set({towns: e.target.checked ? [...filters.towns, t] : filters.towns.filter(x => x !== t)})}), " " + t))))
+    )),
+    h("div", {id: "loosen", className: "slot", ref}),
+    h(Results, {filters}));
+}
+
+ReactDOM.createRoot(document.getElementById("app")).render(h(App));
+
+// preset buttons of this page
+document.getElementById("preset-a").onclick = () => window.setReactFilters({...EMPTY, maxRent: 400, metro: true, parking: true});
+document.getElementById("preset-b").onclick = () => window.setReactFilters({...EMPTY, maxRent: 600, maxCentre: 5, parking: true});
+document.getElementById("preset-reset").onclick = () => window.setReactFilters(EMPTY);
+</script>
+</body>
+</html>

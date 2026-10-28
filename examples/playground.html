@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Options playground - Loosen examples</title>
+<link rel="stylesheet" href="../assets/examples.css">
+<script src="../config.js"></script>
+<script src="../assets/attributes.js"></script>
+<script src="../assets/results.js"></script>
+<script type="module" src="../assets/chrome.js"></script>
+</head>
+<body data-title="Options playground"
+      data-lead="Change an option on the left, search for something impossible in the middle, and watch the panel and the event stream. Every change re-mounts the widget with the new options."
+      data-guide="reference" data-guide-label="9 Reference (all options), 6 Events, 7 Look and accessibility" data-source-extra="assets/attributes.js">
+<main>
+  <div class="presets">
+    <span>Try a conflicting search:</span>
+    <button class="btn" data-preset='{"max_rent":"400","metroM1":["1"],"parking":["1"]}'>rent &le; 400, metro M1, parking</button>
+    <button class="btn" data-preset='{"max_rent":"600","max_centre":"5","parking":["1"]}'>rent &le; 600, centre &le; 5 min, parking</button>
+    <button class="btn" data-preset='{}'>reset</button>
+  </div>
+  <div class="layout three">
+    <aside class="card controls" id="controls" aria-label="Widget options">
+      <h3 style="margin-top:0">Options</h3>
+      <label>why <select name="why"><option>collapsed</option><option>expanded</option><option>hidden</option></select></label>
+      <label>original (the bound an adapted chip replaces) <select name="original"><option>auto</option><option>tooltip</option><option>inline</option><option>none</option></select></label>
+      <label>order <select name="order"><option value="cost">cost (cheapest change first)</option><option value="canonical">canonical</option></select></label>
+      <div class="row"><label>minItems <input type="number" name="minItems" min="1" value="1" style="width:5rem"></label>
+        <label>maxSize <input type="number" name="maxSize" min="0" value="3" style="width:5rem"></label>
+        <label>limit <input type="number" name="limit" min="1" value="8" style="width:5rem"></label></div>
+      <label><span><input type="checkbox" name="showResults" checked> showResults (count on each chip)</span></label>
+      <label><span><input type="checkbox" name="autoUpdate" checked> autoUpdate (off: the page calls update() itself)</span></label>
+      <label><span><input type="checkbox" name="userMinItems"> userMinItems ("Warn me if fewer than N")</span></label>
+      <label><span><input type="checkbox" name="undo" checked> restoreConstraints (Undo)</span></label>
+      <label><span><input type="checkbox" name="preview" checked> onPreview (highlight the fields)</span></label>
+      <h3>Text</h3>
+      <label>texts <select name="texts"><option value="en">English (built in)</option><option value="fr">French (guide, 7)</option><option value="fun">Friendly overrides</option></select></label>
+      <h3>Look (CSS custom properties)</h3>
+      <label>Panel theme <select name="theme"><option value="default">follows this page</option><option value="dark">dark</option><option>warm</option><option>square</option></select></label>
+      <label>Accent <input type="color" name="accent" value="#2563eb"></label>
+      <label>Radius <input type="range" name="radius" min="0" max="24" value="8"></label>
+      <pre id="css-out" style="font-size:.72rem"></pre>
+    </aside>
+    <div>
+      <section class="card">
+        <form id="filters" class="filters" data-source="Form markup">
+          <label class="field">Max rent (CHF) <input type="number" name="max_rent" min="0" step="10"></label>
+          <label class="field">Max minutes to the centre <input type="number" name="max_centre" min="0"></label>
+          <label><input type="checkbox" name="furnished" value="1"> Furnished</label>
+          <label><input type="checkbox" name="metroM1" value="1"> Metro M1</label>
+          <label><input type="checkbox" name="parking" value="1"> Parking</label>
+          <fieldset class="wide"><legend>Town</legend><div class="checks">
+            <label><input type="checkbox" name="town" value="Lausanne"> Lausanne</label>
+            <label><input type="checkbox" name="town" value="Renens"> Renens</label>
+            <label><input type="checkbox" name="town" value="Pully"> Pully</label>
+          </div></fieldset>
+        </form>
+      </section>
+      <div id="loosen" class="slot"></div>
+      <section class="card" id="results"></section>
+      <section class="card" style="margin-top:1rem">
+        <h3 style="margin-top:0">Keyboard and screen readers</h3>
+        <ol class="small" style="margin:0;padding-left:1.2rem">
+          <li>Tab from the form into the panel: the panel is a <code>role="region"</code> with <code>aria-live="polite"</code>, so a new explanation is announced without stealing focus.</li>
+          <li>Every chip and the "Why?" toggle is a real <code>&lt;button&gt;</code>: Tab to it, Enter or Space to use it. Focusing a chip also highlights the fields it would change.</li>
+          <li>With Undo on, the focus moves to the <strong>Undo</strong> button after a click (the chip is gone): press Enter to undo; focus then goes to the first chip.</li>
+          <li>The accessible name of a chip includes the old bound and the result count, e.g. "Rent &le; 706 CHF (instead of &le; 500 CHF), 12 results".</li>
+        </ol>
+      </section>
+    </div>
+    <aside class="card" aria-label="Events">
+      <h3 style="margin-top:0;display:flex;justify-content:space-between;align-items:center">Events (<code>onEvent</code>) <button class="btn" id="clear-log" type="button">clear</button></h3>
+      <ul class="log" id="log" aria-live="off"></ul>
+    </aside>
+  </div>
+</main>
+
+<script type="module" id="code">
+import {mount, fromForm} from "../vendor/loosen.mjs";
+
+const rows = await (await fetch("../data/apartments.json")).json();
+const form = document.getElementById("filters");
+const binding = fromForm(form, {
+  max_rent:   {attr: "rent",            op: "le"},
+  max_centre: {attr: "minutesToCentre", op: "le"},
+  furnished:  {attr: "furnished",       op: "eq"},
+  metroM1:    {attr: "metroM1",         op: "eq"},
+  parking:    {attr: "parking",         op: "eq"},
+  town:       {attr: "town",            op: "in"},
+});
+const refreshResults = () => Apt.render(document.getElementById("results"), rows, binding.getConstraints());
+
+// ---- text overrides (guide section 7): any key of `texts`; unknown keys fail fast ----
+const TEXTS = {
+  en: undefined,
+  fr: {actionOne: "Un de ces changements donne des résultats :", why: "Pourquoi ?", clear: "Retirer {what}", change: "{to} (au lieu de {from})", was: "avant : {from}",
+       noneOne: "Aucun résultat avec {list}", resultOne: "{count} résultat", resultMany: "{count} résultats", applied: "Appliqué : {text}", undo: "Annuler", undone: "Filtres rétablis", and: "et", or: "ou"},
+  fun: {actionOne: "Nothing found. Would one of these do?", why: "What is going on?", clear: "Drop {what}", undo: "Take it back", applied: "Done: {text}"},
+};
+// ---- look: the CSS custom properties of section 7, set on the mount element ----
+const THEMES = {
+  default: {},
+  dark:   {"--loosen-bg": "#0f172a", "--loosen-fg": "#e5e7eb", "--loosen-muted": "#94a3b8", "--loosen-border": "#334155", "--loosen-chip-bg": "#1e293b", "--loosen-chip-fg": "#93c5fd", "--loosen-accent": "#60a5fa", "--loosen-accent-fg": "#0b1220"},
+  warm:   {"--loosen-bg": "#fff7ed", "--loosen-border": "#fdba74", "--loosen-chip-bg": "#ffedd5", "--loosen-chip-fg": "#9a3412", "--loosen-accent": "#ea580c", "--loosen-radius": "16px", "--loosen-padding": "16px 18px"},
+  square: {"--loosen-radius": "0", "--loosen-border": "#111", "--loosen-chip-bg": "#fff", "--loosen-chip-fg": "#111", "--loosen-accent": "#111", "--loosen-font": "600 15px/1.4 ui-monospace, monospace"},
+};
+
+// ---- the settings the controls edit ----
+const controls = document.getElementById("controls"), slot = document.getElementById("loosen");
+const read = () => {
+  const v = name => controls.querySelector(`[name=${name}]`);
+  return {why: v("why").value, original: v("original").value, order: v("order").value, minItems: +v("minItems").value, maxSize: +v("maxSize").value, limit: +v("limit").value,
+    showResults: v("showResults").checked, autoUpdate: v("autoUpdate").checked, userMinItems: v("userMinItems").checked, undo: v("undo").checked, preview: v("preview").checked,
+    texts: v("texts").value, theme: v("theme").value, accent: v("accent").value, radius: v("radius").value};
+};
+
+let widget, settings;
+function remount() {
+  widget?.destroy();
+  settings = read();
+  const css = {...THEMES[settings.theme]};
+  if (settings.accent !== "#2563eb") css["--loosen-accent"] = settings.accent;
+  if (settings.radius !== "8") css["--loosen-radius"] = `${settings.radius}px`;
+  slot.removeAttribute("style");
+  for (const [name, value] of Object.entries(css)) slot.style.setProperty(name, value);
+  document.getElementById("css-out").textContent = Object.keys(css).length ? `#loosen {\n${Object.entries(css).map(([k, v]) => `  ${k}: ${v};`).join("\n")}\n}` : "(this page already maps its colours onto the --loosen-* properties: see assets/examples.css)";
+
+  widget = mount(slot, {
+    licence: window.LOOSEN_LICENCE, attributes: APARTMENT_ATTRIBUTES, data: rows,
+    getConstraints: binding.getConstraints,
+    applyRelaxation: (relaxation, constraints) => {
+      binding.applyRelaxation(relaxation, constraints); refreshResults();
+      if (!settings.autoUpdate) widget.update();                  // with autoUpdate off, updating is the host's job
+    },
+    ...(settings.undo ? {restoreConstraints: constraints => { binding.restoreConstraints(constraints); refreshResults(); if (!settings.autoUpdate) widget.update(); }} : {}),
+    ...(settings.preview ? {onPreview: binding.onPreview} : {}),
+    ...(TEXTS[settings.texts] ? {texts: TEXTS[settings.texts]} : {}),
+    why: settings.why, original: settings.original, order: settings.order, showResults: settings.showResults,
+    minItems: settings.minItems, maxSize: settings.maxSize, limit: settings.limit, autoUpdate: settings.autoUpdate,
+    userMinItems: settings.userMinItems, storageKey: "loosen-examples-playground-minItems",
+    onEvent: logEvent,
+  });
+  widget.update();
+}
+
+// ---- events (guide section 6): licence, panel_shown, relaxation_applied, relaxation_previewed, relaxation_undone, error ----
+const log = document.getElementById("log");
+function logEvent(e) {
+  const summary = {
+    licence: () => `${e.status} (${e.reason})`,
+    panel_shown: () => `${e.relaxations.length} relaxations, ${e.conflicts.length} conflicts, ${e.mode}, ${e.tookMs} ms`,
+    relaxation_applied: () => `${e.kind}: ${e.text}`,
+    relaxation_previewed: () => `${e.kind}: ${e.text}`,
+    relaxation_undone: () => e.text,
+    error: () => `${e.code}: ${e.message}`,
+  }[e.type]?.() ?? "";
+  const li = document.createElement("li");
+  li.dataset.type = e.type;
+  li.title = JSON.stringify(e, null, 1);
+  li.innerHTML = `<b></b> <span></span>`;
+  li.firstChild.textContent = e.type; li.lastChild.textContent = summary;
+  log.prepend(li);
+  while (log.children.length > 80) log.lastChild.remove();
+}
+document.getElementById("clear-log").onclick = () => log.replaceChildren();
+
+controls.addEventListener("change", remount);
+controls.addEventListener("input", ev => { if (ev.target.type === "range" || ev.target.type === "color") remount(); });
+form.addEventListener("input", () => { refreshResults(); widget.update(); });
+refreshResults();
+remount();
+</script>
+</body>
+</html>

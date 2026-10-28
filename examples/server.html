@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Server mode with loosend - Loosen examples</title>
+<link rel="stylesheet" href="../assets/examples.css">
+<script src="../config.js"></script>
+<script src="../assets/attributes.js"></script>
+<script src="../assets/results.js"></script>
+<script type="module" src="../assets/chrome.js"></script>
+</head>
+<body data-title="Server mode with loosend"
+      data-lead="The analysis runs on your own Loosen server; the browser only sends the filters (debounced, one small request per search) and the catalogue never reaches the visitor. Needs a local loosend: ./serve.sh --with-server."
+      data-guide="data" data-guide-label="4 Give it data, or a server (server mode)" data-source-extra="assets/attributes.js scripts/run-loosend.sh scripts/load-catalog.sh">
+<main>
+  <div id="status" class="status" role="status">Checking the server...</div>
+  <div class="presets">
+    <span>Try a conflicting search:</span>
+    <button class="btn" data-preset='{"max_rent":"400","furnished":"0","metroM1":"1"}'>rent &le; 400, furnished = no, metro M1 = yes</button>
+    <button class="btn" data-preset='{"max_rent":"600","max_centre":"5","parking":"1"}'>rent &le; 600, centre &le; 5 min, parking = yes</button>
+    <button class="btn" data-preset='{}'>reset</button>
+  </div>
+  <section class="card">
+    <form id="filters" class="filters" style="grid-template-columns: 1fr 1fr" data-source="Form markup">
+      <label class="field">Max rent (CHF) <input type="number" name="max_rent" min="0" step="10"></label>
+      <label class="field">Max minutes to the centre <input type="number" name="max_centre" min="0"></label>
+      <div class="yn" role="group" aria-label="Furnished"><span>Furnished</span><label><input type="radio" name="furnished" value="1"> yes</label><label><input type="radio" name="furnished" value="0"> no</label><button type="button" data-clear="furnished">any</button></div>
+      <div class="yn" role="group" aria-label="Metro M1"><span>Metro M1</span><label><input type="radio" name="metroM1" value="1"> yes</label><label><input type="radio" name="metroM1" value="0"> no</label><button type="button" data-clear="metroM1">any</button></div>
+      <div class="yn" role="group" aria-label="Parking"><span>Parking</span><label><input type="radio" name="parking" value="1"> yes</label><label><input type="radio" name="parking" value="0"> no</label><button type="button" data-clear="parking">any</button></div>
+    </form>
+  </section>
+  <div id="loosen" class="slot"></div>
+  <section class="card" id="results"></section>
+  <details class="source" open style="margin-top:1rem"><summary>Setting up the server (copy and paste)</summary>
+<pre><code># 1. start loosend (public Docker image, or the binary from https://loosen.sicena.com/downloads with its SHA-256 verified)
+scripts/run-loosend.sh                      # http://localhost:8130, CORS allows http://localhost:8123
+
+# 2. define the catalog, load the 186 items, set the read key
+scripts/load-catalog.sh
+
+# 3. open this page; ?endpoint=...&amp;catalog=...&amp;key=... override the defaults of config.js
+#    CORS:      LOOSEND_ALLOWED_ORIGINS must contain this page's origin (scheme + host + port, no trailing slash)
+#    Read key:  the widget sends it as X-Loosen-Key. It is in this page's source, so it is NOT a secret: it only lets you revoke
+#               and limit access per catalog. The admin key (examples-admin-key-0000) never goes to a browser.</code></pre></details>
+</main>
+
+<script type="module" id="code">
+import {mount, fromForm} from "../vendor/loosen.mjs";
+
+const query = new URLSearchParams(location.search);
+const defaults = window.LOOSEN_SERVER ?? {endpoint: "http://localhost:8130", catalog: "apartments", key: "examples-read-key"};
+const server = {
+  endpoint: query.get("endpoint") ?? defaults.endpoint,           // where loosend listens
+  catalog: query.get("catalog") ?? defaults.catalog,
+  key: query.get("key") ?? defaults.key,                         // the catalog's read key, sent as X-Loosen-Key (optional)
+};
+
+const rows = await (await fetch("../data/apartments.json")).json();   // only for the result list: a real shop gets its results from its own backend
+const form = document.getElementById("filters");
+const binding = fromForm(form, {
+  max_rent:   {attr: "rent",            op: "le"},
+  max_centre: {attr: "minutesToCentre", op: "le"},
+  furnished:  {attr: "furnished",       op: "eq", number: true},
+  metroM1:    {attr: "metroM1",         op: "eq", number: true},
+  parking:    {attr: "parking",         op: "eq", number: true},
+});
+const showResults = () => Apt.render(document.getElementById("results"), rows, binding.getConstraints());
+
+const widget = mount(document.getElementById("loosen"), {
+  licence: window.LOOSEN_LICENCE,
+  attributes: APARTMENT_ATTRIBUTES,                              // server mode: only labels and formats are used; kinds live in the catalog
+  server,                                                        // instead of `data`
+  getConstraints: binding.getConstraints,
+  applyRelaxation: (relaxation, constraints) => { binding.applyRelaxation(relaxation, constraints); showResults(); },
+  restoreConstraints: constraints => { binding.restoreConstraints(constraints); showResults(); },
+  onPreview: binding.onPreview,
+  onEvent: event => { if (event.type === "error") showStatus(`The widget reported an error: ${event.code}, ${event.message}`, false); },
+});
+form.addEventListener("input", () => { showResults(); widget.update(); });
+showResults();
+widget.update();
+
+// ---- the rest only tells the developer whether the server is there ----
+function showStatus(text, good) {
+  const box = document.getElementById("status");
+  box.textContent = text; box.className = `status ${good ? "good" : "bad"}`;
+}
+// A harmless probe of the same endpoint the widget uses (/health has no CORS headers, explain does): tells CORS, read key and catalog problems apart.
+fetch(`${server.endpoint}/v1/catalogs/${server.catalog}/explain`, {method: "POST", headers: {"Content-Type": "application/json", ...(server.key ? {"X-Loosen-Key": server.key} : {})}, body: JSON.stringify({constraints: [{attr: "rent", op: "le", value: 0}]})})
+  .then(async r => r.ok ? (await r.text(), showStatus(`loosend answers at ${server.endpoint} for catalog "${server.catalog}" (read key ${server.key ? "sent" : "not used"}).`, true))
+                        : showStatus(`loosend answered ${r.status} ${(await r.json().catch(() => ({}))).error ?? ""} at ${server.endpoint}.`, false),
+        () => showStatus(`No loosend answers at ${server.endpoint} (or the page's origin is not in LOOSEND_ALLOWED_ORIGINS). Run ./serve.sh --with-server, or scripts/run-loosend.sh and scripts/load-catalog.sh.`, false));
+</script>
+</body>
+</html>

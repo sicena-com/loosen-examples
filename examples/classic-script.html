@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classic script - Loosen examples</title>
+<link rel="stylesheet" href="../assets/examples.css">
+<script src="../config.js"></script>
+<script src="../assets/attributes.js"></script>
+<script src="../assets/results.js"></script>
+<script type="module" src="../assets/chrome.js"></script>
+</head>
+<body data-title="Classic script (window.Loosen)"
+      data-lead="For sites without modules: one script tag defines window.Loosen. Same widget, same options. The script is the IIFE build; you can also load it from https://loosen.sicena.com/widget/v1/loosen.js."
+      data-guide="script" data-guide-label="2 Add the script" data-source-extra="assets/attributes.js">
+<main>
+  <div class="presets">
+    <span>Try a conflicting search:</span>
+    <button class="btn" data-preset='{"max_rent":"400","metroM1":["1"],"parking":["1"]}'>rent &le; 400, metro M1, parking</button>
+    <button class="btn" data-preset='{"max_rent":"600","max_centre":"5","parking":["1"]}'>rent &le; 600, centre &le; 5 min, parking</button>
+    <button class="btn" data-preset='{}'>reset</button>
+  </div>
+  <section class="card">
+    <form id="filters" class="filters" data-source="Form markup">
+      <label class="field">Max rent (CHF) <input type="number" name="max_rent" min="0" step="10"></label>
+      <label class="field">Max minutes to the centre <input type="number" name="max_centre" min="0"></label>
+      <label><input type="checkbox" name="furnished" value="1"> Furnished</label>
+      <label><input type="checkbox" name="metroM1" value="1"> Metro M1</label>
+      <label><input type="checkbox" name="parking" value="1"> Parking</label>
+    </form>
+  </section>
+  <div id="loosen" class="slot"></div>
+  <section class="card" id="results"></section>
+</main>
+
+<!-- no type="module": a plain script tag. It defines window.Loosen -->
+<script src="../vendor/loosen.iife.js"></script>
+<script id="code">
+fetch("../data/apartments.json").then(r => r.json()).then(rows => {
+  const form = document.getElementById("filters");
+  const binding = Loosen.fromForm(form, {
+    max_rent:   {attr: "rent",            op: "le"},
+    max_centre: {attr: "minutesToCentre", op: "le"},
+    furnished:  {attr: "furnished",       op: "eq"},
+    metroM1:    {attr: "metroM1",         op: "eq"},
+    parking:    {attr: "parking",         op: "eq"},
+  });
+  const showResults = () => Apt.render(document.getElementById("results"), rows, binding.getConstraints());
+
+  const widget = Loosen.mount(document.getElementById("loosen"), {
+    licence: window.LOOSEN_LICENCE,
+    attributes: APARTMENT_ATTRIBUTES,
+    data: rows,
+    getConstraints: binding.getConstraints,
+    applyRelaxation: (relaxation, constraints) => { binding.applyRelaxation(relaxation, constraints); showResults(); },
+    restoreConstraints: constraints => { binding.restoreConstraints(constraints); showResults(); },
+    onPreview: binding.onPreview,
+  });
+  form.addEventListener("input", () => { showResults(); widget.update(); });
+  showResults();
+  widget.update();
+});
+</script>
+</body>
+</html>

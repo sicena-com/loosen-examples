@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loosen examples</title>
+<link rel="stylesheet" href="assets/examples.css">
+<script src="config.js"></script>
+<script type="module" src="assets/chrome.js"></script>
+</head>
+<body>
+<main>
+  <section class="intro">
+    <h1>Loosen examples</h1>
+    <p class="lead">Every way to wire <a href="https://loosen.sicena.com">Loosen</a> into a search page, on one real catalogue: 186 apartments around Lausanne. Open a variant, type filters that cannot match, and the widget explains which filters conflict and what to relax, one click each.</p>
+    <p class="guide">Guide: <a href="https://loosen.sicena.com/docs/install">loosen.sicena.com/docs/install</a> &middot; Server: <a href="https://loosen.sicena.com/docs/server">/docs/server</a> &middot; Data: <a href="data/README.md">data/README.md</a></p>
+  </section>
+
+  <section class="card">
+    <h2 style="margin-top:0">What you will see</h2>
+    <p class="muted" style="margin-top:0">Search rent &le; 500 CHF, minutes to the centre &le; 5, in Lausanne or Pully, with a balcony and a view: no result. The panel under your filters says (this is the real output of page 5):</p>
+    <pre class="panel-demo">Any of these changes gives results:
+  [Rent ≤ 706 CHF · 1 result]   [Clear Features · 6 results]   [Minutes to the centre ≤ 9 min + Clear Town · 1 result]
+  Why?
+    No results with Rent ≤ 500 CHF and Minutes to the centre ≤ 5 min and Features: balcony and view
+      [Rent ≤ 550 CHF]  [Minutes to the centre ≤ 9 min]  [Clear Features]
+    No results with Rent ≤ 500 CHF and Town is Lausanne or Pully and Features: balcony and view
+      [Rent ≤ 550 CHF]  [Clear Town]  [Clear Features]</pre>
+    <p class="small" style="margin-bottom:0">Each chip applies the change to <em>your</em> filters (fields, state object, URL), your list refreshes, and an Undo button appears. Two searches with no result in this catalogue: <b>rent &le; 400 + not furnished + metro M1</b> and <b>rent &le; 600 + centre &le; 5 min + parking</b>; every page has buttons for them.</p>
+  </section>
+
+  <h2>The variants</h2>
+  <ul class="cards">
+    <li><h3><span class="num">1</span>Client mode, ES module</h3><p><code>mount</code> from <code>vendor/loosen.mjs</code>. Data as an array, a URL or an async function.</p>
+      <div class="go"><a href="examples/client-module.html">Open</a><a href="https://loosen.sicena.com/docs/install#data">Guide 2, 4</a></div></li>
+    <li><h3><span class="num">2</span>Classic <code>&lt;script&gt;</code></h3><p><code>window.Loosen</code> from the IIFE build, for sites without modules.</p>
+      <div class="go"><a href="examples/classic-script.html">Open</a><a href="https://loosen.sicena.com/docs/install#script">Guide 2</a></div></li>
+    <li><h3><span class="num">3</span>Plain form: <code>fromForm</code></h3><p>The thesis form as ordinary HTML (numbers, towns, yes/no radios) and a live result table.</p>
+      <div class="go"><a href="examples/form-fromform.html">Open</a><a href="https://loosen.sicena.com/docs/install#form">Guide 5.1</a></div></li>
+    <li><h3><span class="num">4</span>By hand</h3><p>Your own markup: explicit <code>getConstraints</code>, <code>applyRelaxation</code>, <code>restoreConstraints</code>, <code>onPreview</code>.</p>
+      <div class="go"><a href="examples/by-hand.html">Open</a><a href="https://loosen.sicena.com/docs/install#manual">Guide 5.2</a></div></li>
+    <li><h3><span class="num">5</span>Facet state object</h3><p>An Algolia / Typesense / Meilisearch style UI: checkbox facets and range sliders around one state object.</p>
+      <div class="go"><a href="examples/facets-state.html">Open</a><a href="https://loosen.sicena.com/docs/install#facets">Guide 5.3</a></div></li>
+    <li><h3><span class="num">6</span>React 18</h3><p>A real React app (vendored UMD, no build, no JSX): <code>useLoosen</code> with a ref and an effect. Tested.</p>
+      <div class="go"><a href="examples/react.html">Open</a><a href="https://loosen.sicena.com/docs/install#react">Guide 5.4</a></div></li>
+    <li><h3><span class="num">7</span>Server-rendered shop <span class="badge-note">needs ./serve.sh --with-server</span></h3><p>Filters in the URL, results rendered by a Go program (stdlib only), relaxations navigate to the new URL. Back is the Undo.</p>
+      <div class="go"><a id="shop-link" href="http://localhost:8124/">Open (port 8124)</a><a href="https://loosen.sicena.com/docs/install#url">Guide 5.5</a></div></li>
+    <li><h3><span class="num">8</span>Server mode: <code>loosend</code> <span class="badge-note">needs ./serve.sh --with-server</span></h3><p>The analysis runs on your Loosen server; read key, CORS, catalogue loaded with <code>curl</code>. Docker, binary or compose.</p>
+      <div class="go"><a href="examples/server.html">Open</a><a href="https://loosen.sicena.com/docs/server">Server docs</a></div></li>
+    <li><h3><span class="num">9</span>Options playground</h3><p>Toggle every option live, watch the event stream, theme with CSS custom properties, override texts, keyboard notes.</p>
+      <div class="go"><a href="examples/playground.html">Open</a><a href="https://loosen.sicena.com/docs/install#reference">Guide 9</a></div></li>
+  </ul>
+
+  <section class="card">
+    <h2 style="margin-top:0">Licence key</h2>
+    <p id="licence-note" class="muted" style="margin:0"></p>
+  </section>
+</main>
+<script>
+  document.getElementById("shop-link").href = window.LOOSEN_SHOP ?? "http://localhost:8124/";
+  document.getElementById("licence-note").innerHTML = window.LOOSEN_LICENCE
+    ? "A licence key is set in <code>config.js</code>: the widget checks it in your browser (offline)."
+    : "No licence key: everything works, the widget shows a small <em>Unlicensed copy</em> note and limits client mode to 1,000 items (the 186 apartments fit). For a clean look get a free 30-day trial key at <a href=\"https://loosen.sicena.com/trial\">loosen.sicena.com/trial</a> and paste it into <code>config.js</code>; see the README.";
+</script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>By hand - Loosen examples</title>
+<link rel="stylesheet" href="../assets/examples.css">
+<script src="../config.js"></script>
+<script src="../assets/attributes.js"></script>
+<script src="../assets/results.js"></script>
+<script type="module" src="../assets/chrome.js"></script>
+<style>.pill { border: 1px solid var(--border); border-radius: 999px; padding: .15rem .7rem; } .pill:has(input:checked) { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); } .pill input { position: absolute; opacity: 0; } .pill:has(input:focus-visible) { outline: 2px solid var(--focus); } .pill[data-loosen-preview] { outline: 2px dashed var(--accent); }</style>
+</head>
+<body data-title="Any form, by hand"
+      data-lead="When your markup is not a plain form, write the three small functions yourself: getConstraints reads your filters, applyRelaxation changes them, restoreConstraints is the exact inverse (for Undo). Here: a select, pill-shaped checkboxes and a custom highlight."
+      data-guide="manual" data-guide-label="5.2 Any form, by hand" data-source-extra="assets/attributes.js">
+<main>
+  <div class="presets">
+    <span>Try a conflicting search:</span>
+    <button class="btn" data-preset='{"max_rent":"400","metroM1":["1"],"parking":["1"]}'>rent &le; 400, metro M1, parking</button>
+    <button class="btn" data-preset='{"max_rent":"600","max_centre":"5","parking":["1"]}'>rent &le; 600, centre &le; 5 min, parking</button>
+    <button class="btn" data-preset='{}'>reset</button>
+  </div>
+  <section class="card">
+    <form id="filters" class="filters" data-source="Form markup (not a plain form: a select and pill buttons)">
+      <label class="field">Max rent (CHF) <input type="number" name="max_rent" min="0" step="10"></label>
+      <label class="field">Rooms
+        <select name="min_rooms"><option value="">any</option><option value="1">1 or more</option><option value="2">2 or more</option><option value="3">3 or more</option><option value="4">4 or more</option></select></label>
+      <label class="field">Max minutes to the centre <input type="number" name="max_centre" min="0"></label>
+      <div class="checks wide" role="group" aria-label="Must have">
+        <label class="pill"><input type="checkbox" name="furnished" value="1"> furnished</label>
+        <label class="pill"><input type="checkbox" name="metroM1" value="1"> metro M1</label>
+        <label class="pill"><input type="checkbox" name="parking" value="1"> parking</label>
+      </div>
+      <div class="checks wide" role="group" aria-label="Town">
+        <label class="pill"><input type="checkbox" name="town" value="Lausanne"> Lausanne</label>
+        <label class="pill"><input type="checkbox" name="town" value="Renens"> Renens</label>
+        <label class="pill"><input type="checkbox" name="town" value="Prilly"> Prilly</label>
+        <label class="pill"><input type="checkbox" name="town" value="Pully"> Pully</label>
+      </div>
+    </form>
+  </section>
+  <div id="loosen" class="slot"></div>
+  <section class="card" id="results"></section>
+</main>
+
+<script type="module" id="code">
+import {mount} from "../vendor/loosen.mjs";
+
+const rows = await (await fetch("../data/apartments.json")).json();
+const form = document.getElementById("filters");
+
+// 1. Your filters -> constraints. Skip the empty ones.
+const getConstraints = () => {
+  const data = new FormData(form), out = [];
+  if (data.get("max_rent"))    out.push({attr: "rent",            op: "le", value: Number(data.get("max_rent"))});
+  if (data.get("min_rooms"))   out.push({attr: "rooms",           op: "ge", value: Number(data.get("min_rooms"))});
+  if (data.get("max_centre"))  out.push({attr: "minutesToCentre", op: "le", value: Number(data.get("max_centre"))});
+  if (data.get("furnished"))   out.push({attr: "furnished",       op: "eq", value: 1});
+  if (data.get("metroM1"))     out.push({attr: "metroM1",         op: "eq", value: 1});
+  if (data.get("parking"))     out.push({attr: "parking",         op: "eq", value: 1});
+  const towns = data.getAll("town");
+  if (towns.length)            out.push({attr: "town",            op: "in", values: towns});
+  return out;
+};
+
+// 2. A chip was clicked: change YOUR filters. `relaxation.changes[].index` points into `constraints`.
+const FIELD = {rent: "max_rent", rooms: "min_rooms", minutesToCentre: "max_centre"};
+const applyRelaxation = (relaxation, constraints) => {
+  for (const change of relaxation.changes) {
+    const attr = constraints[change.index].attr;
+    if (attr in FIELD)    form.elements[FIELD[attr]].value = change.action === "adapt" ? change.value : "";
+    else if (attr === "town") form.querySelectorAll("[name=town]").forEach(box => { box.checked = false; });
+    else                  form.elements[attr].checked = false;                                               // furnished, metroM1, parking
+  }
+  showResults();
+};
+
+// 3. Optional, for "Undo": the exact inverse of getConstraints.
+const restoreConstraints = constraints => {
+  const find = attr => constraints.find(c => c.attr === attr);
+  form.elements.max_rent.value   = find("rent")?.value ?? "";
+  form.elements.min_rooms.value  = find("rooms")?.value ?? "";
+  form.elements.max_centre.value = find("minutesToCentre")?.value ?? "";
+  for (const name of ["furnished", "metroM1", "parking"]) form.elements[name].checked = !!find(name);
+  form.querySelectorAll("[name=town]").forEach(box => { box.checked = !!find("town")?.values.includes(box.value); });
+  showResults();
+};
+
+// 4. Optional: highlight what the hovered chip would change (here: the label around each control).
+const onPreview = (relaxation, constraints) => {
+  form.querySelectorAll("[data-loosen-preview]").forEach(e => e.removeAttribute("data-loosen-preview"));
+  for (const change of relaxation?.changes ?? []) {
+    const attr = constraints[change.index].attr;
+    const names = attr === "town" ? ["town"] : [FIELD[attr] ?? attr];
+    for (const name of names) form.querySelectorAll(`[name=${name}]`).forEach(f => f.closest("label").setAttribute("data-loosen-preview", ""));
+  }
+};
+
+const showResults = () => Apt.render(document.getElementById("results"), rows, getConstraints());
+
+const widget = mount(document.getElementById("loosen"), {
+  licence: window.LOOSEN_LICENCE, attributes: APARTMENT_ATTRIBUTES, data: rows,
+  getConstraints, applyRelaxation, restoreConstraints, onPreview,
+});
+form.addEventListener("input", () => { showResults(); widget.update(); });   // the visitor's own changes: tell the widget
+showResults();
+widget.update();
+</script>
+</body>
+</html>

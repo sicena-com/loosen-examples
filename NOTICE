@@ -1,0 +1,19 @@
+Loosen examples
+===============
+
+The example code of this repository (HTML, CSS, JavaScript in assets/ and examples/, the Go programs in cmd/ and
+scripts/, the shell scripts, the tests) is licensed under the MIT licence: see LICENSE.
+
+The following files are NOT covered by that licence:
+
+vendor/loosen.mjs, vendor/loosen.iife.js
+    The Loosen widget, copyright Sicena. It is distributed under Loosen's terms: https://loosen.sicena.com/terms
+    It runs unlicensed (small "Unlicensed copy" note, 1,000 items in the browser) or with a licence key; see README.md.
+    The files are copies of the published https://loosen.sicena.com/widget/v1/ files (see vendor/SOURCE.txt).
+
+vendor/react.production.min.js, vendor/react-dom.production.min.js
+    React 18.3.1, copyright Meta Platforms, Inc. and affiliates, MIT licence: vendor/LICENSES/react-and-react-dom-MIT.txt
+
+data/apartments.json, data/apartments.csv, data/apartments.loosend.json
+    Anonymous attributes of 186 apartment listings collected for the author's PhD research (EPFL, 2004). See data/README.md.
+    They contain no personal data and are provided for demonstration.

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plain form with fromForm - Loosen examples</title>
+<link rel="stylesheet" href="../assets/examples.css">
+<script src="../config.js"></script>
+<script src="../assets/attributes.js"></script>
+<script src="../assets/results.js"></script>
+<script type="module" src="../assets/chrome.js"></script>
+</head>
+<body data-title="A plain HTML form: fromForm"
+      data-lead="The form of the thesis, as ordinary HTML: numbers, a town list, and yes/no radios. fromForm turns it into constraints and writes relaxations back into the fields."
+      data-guide="form" data-guide-label="5.1 A plain HTML form: fromForm" data-source-extra="assets/attributes.js">
+<main>
+  <div class="presets">
+    <span>Try a conflicting search:</span>
+    <button class="btn" data-preset='{"max_rent":"400","furnished":"0","metroM1":"1"}'>rent &le; 400, furnished = no, metro M1 = yes</button>
+    <button class="btn" data-preset='{"max_rent":"600","max_centre":"5","parking":"1"}'>rent &le; 600, centre &le; 5 min, parking = yes</button>
+    <button class="btn" data-preset='{}'>reset</button>
+  </div>
+  <div class="layout two">
+    <section class="card">
+      <form id="filters" class="filters" style="grid-template-columns: 1fr 1fr" data-source="Form markup">
+        <label class="field">Max rent (CHF) <input type="number" name="max_rent" min="0" step="10"></label>
+        <label class="field">Min rooms <input type="number" name="min_rooms" min="1" step="1"></label>
+        <label class="field">Max minutes to the university <input type="number" name="max_unil" min="0"></label>
+        <label class="field">Max minutes to the centre <input type="number" name="max_centre" min="0"></label>
+        <fieldset class="wide"><legend>Town (one of)</legend><div class="checks">
+          <label><input type="checkbox" name="town" value="Lausanne"> Lausanne</label>
+          <label><input type="checkbox" name="town" value="Renens"> Renens</label>
+          <label><input type="checkbox" name="town" value="Ecublens"> Ecublens</label>
+          <label><input type="checkbox" name="town" value="Prilly"> Prilly</label>
+          <label><input type="checkbox" name="town" value="Pully"> Pully</label>
+          <label><input type="checkbox" name="town" value="Préverenges"> Préverenges</label>
+          <label><input type="checkbox" name="town" value="Crissier"> Crissier</label>
+        </div></fieldset>
+        <fieldset class="wide"><legend>Equipment and surroundings (yes / no / any)</legend>
+      <div class="yn" role="group" aria-label="Furnished"><span>Furnished</span><label><input type="radio" name="furnished" value="1"> yes</label><label><input type="radio" name="furnished" value="0"> no</label><button type="button" data-clear="furnished" aria-label="Clear Furnished">any</button></div>
+      <div class="yn" role="group" aria-label="Kitchen"><span>Kitchen</span><label><input type="radio" name="kitchen" value="1"> yes</label><label><input type="radio" name="kitchen" value="0"> no</label><button type="button" data-clear="kitchen" aria-label="Clear Kitchen">any</button></div>
+      <div class="yn" role="group" aria-label="Bathroom"><span>Bathroom</span><label><input type="radio" name="bathroom" value="1"> yes</label><label><input type="radio" name="bathroom" value="0"> no</label><button type="button" data-clear="bathroom" aria-label="Clear Bathroom">any</button></div>
+      <div class="yn" role="group" aria-label="Quiet"><span>Quiet</span><label><input type="radio" name="quiet" value="1"> yes</label><label><input type="radio" name="quiet" value="0"> no</label><button type="button" data-clear="quiet" aria-label="Clear Quiet">any</button></div>
+      <div class="yn" role="group" aria-label="Balcony"><span>Balcony</span><label><input type="radio" name="balcony" value="1"> yes</label><label><input type="radio" name="balcony" value="0"> no</label><button type="button" data-clear="balcony" aria-label="Clear Balcony">any</button></div>
+      <div class="yn" role="group" aria-label="View"><span>View</span><label><input type="radio" name="view" value="1"> yes</label><label><input type="radio" name="view" value="0"> no</label><button type="button" data-clear="view" aria-label="Clear View">any</button></div>
+      <div class="yn" role="group" aria-label="Bus stop nearby"><span>Bus stop nearby</span><label><input type="radio" name="bus" value="1"> yes</label><label><input type="radio" name="bus" value="0"> no</label><button type="button" data-clear="bus" aria-label="Clear Bus stop nearby">any</button></div>
+      <div class="yn" role="group" aria-label="Parking"><span>Parking</span><label><input type="radio" name="parking" value="1"> yes</label><label><input type="radio" name="parking" value="0"> no</label><button type="button" data-clear="parking" aria-label="Clear Parking">any</button></div>
+      <div class="yn" role="group" aria-label="Metro M1"><span>Metro M1</span><label><input type="radio" name="metroM1" value="1"> yes</label><label><input type="radio" name="metroM1" value="0"> no</label><button type="button" data-clear="metroM1" aria-label="Clear Metro M1">any</button></div>
+        </fieldset>
+      </form>
+    </section>
+    <div>
+      <div id="loosen" class="slot" style="margin-top:0"></div>
+      <section class="card" id="results"></section>
+    </div>
+  </div>
+</main>
+
+<script type="module" id="code">
+import {mount, fromForm} from "../vendor/loosen.mjs";
+
+const rows = await (await fetch("../data/apartments.json")).json();
+const form = document.getElementById("filters");
+
+// field name -> attribute and operator. Radios deliver strings, so `number: true` makes "1" / "0" the numbers 1 / 0.
+// A relaxation of a radio unchecks it ("any"); a relaxation of a number field writes the new bound into it.
+const binding = fromForm(form, {
+    max_rent:   {attr: "rent",            op: "le"},
+    min_rooms:  {attr: "rooms",           op: "ge"},
+    max_unil:   {attr: "minutesToUnil",   op: "le"},
+    max_centre: {attr: "minutesToCentre", op: "le"},
+    town:       {attr: "town",            op: "in"},
+    furnished:  {attr: "furnished", op: "eq", number: true},
+    kitchen:    {attr: "kitchen", op: "eq", number: true},
+    bathroom:   {attr: "bathroom", op: "eq", number: true},
+    quiet:      {attr: "quiet", op: "eq", number: true},
+    balcony:    {attr: "balcony", op: "eq", number: true},
+    view:       {attr: "view", op: "eq", number: true},
+    bus:        {attr: "bus", op: "eq", number: true},
+    parking:    {attr: "parking", op: "eq", number: true},
+    metroM1:    {attr: "metroM1", op: "eq", number: true},
+});
+
+const showResults = () => Apt.render(document.getElementById("results"), rows, binding.getConstraints(), {max: 12});
+
+const widget = mount(document.getElementById("loosen"), {
+  licence: window.LOOSEN_LICENCE,
+  attributes: APARTMENT_ATTRIBUTES,
+  data: rows,
+  getConstraints: binding.getConstraints,
+  applyRelaxation: (relaxation, constraints) => { binding.applyRelaxation(relaxation, constraints); showResults(); },
+  restoreConstraints: constraints => { binding.restoreConstraints(constraints); showResults(); },
+  onPreview: binding.onPreview,                       // [data-loosen-preview] is styled in assets/examples.css
+});
+
+form.addEventListener("input", () => { showResults(); widget.update(); });
+showResults();
+widget.update();
+</script>
+</body>
+</html>

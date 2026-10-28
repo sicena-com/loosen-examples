@@ -1,0 +1,187 @@
+id,rent,rooms,minutesToUnil,minutesToCentre,town,furnished,kitchen,sharedKitchen,fittedKitchen,bathroom,sharedBathroom,bathtub,quiet,balcony,view,bus,parking,metroM1,features
+apt-001,370,1,18,6,Lausanne,1,1,1,0,1,1,0,0,0,0,1,0,0,bus stop
+apt-002,980,2,7,5,Renens,0,0,0,0,0,0,0,0,1,0,0,0,1,balcony
+apt-003,1380,3,19,19,Lausanne,1,0,0,0,0,0,0,1,0,0,1,1,0,quiet|bus stop
+apt-004,690,1,7,5,Renens,1,0,0,0,0,0,0,0,1,1,1,0,1,balcony|view|bus stop
+apt-005,625,2,9,8,Lausanne,0,0,0,0,0,0,0,0,0,1,1,0,1,view|bus stop
+apt-006,550,1,7,5,Renens,1,1,1,0,1,1,0,1,1,1,0,0,0,balcony|view|quiet
+apt-007,1600,4,9,8,Lausanne,0,0,0,0,0,0,0,1,0,0,1,1,0,quiet|bus stop
+apt-008,475,1,9,8,Lausanne,1,1,1,0,1,1,0,0,0,0,1,1,1,bus stop
+apt-009,490,1,10,12,Crissier,1,1,1,0,1,1,0,1,0,1,1,0,1,view|quiet|bus stop
+apt-010,930,2,21,8,Pully,0,0,0,0,0,0,0,1,1,0,1,0,0,balcony|quiet|bus stop
+apt-011,680,1,18,6,Lausanne,0,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-012,600,1,14,3,Lausanne,0,1,1,0,1,1,0,1,0,1,1,0,1,view|quiet|bus stop
+apt-013,600,1,9,8,Lausanne,0,1,1,0,1,1,0,0,0,0,1,0,1,bus stop
+apt-014,700,1,19,19,Lutry,1,0,0,0,1,1,0,1,0,0,1,0,0,quiet|bus stop
+apt-015,550,1,7,5,Renens,0,1,1,0,1,1,0,1,0,0,1,0,0,quiet|bus stop
+apt-016,610,1,7,5,Renens,1,0,0,0,0,0,0,0,1,1,1,0,1,balcony|view|bus stop
+apt-017,500,1,9,8,Lausanne,1,1,1,0,1,1,0,0,0,0,1,0,0,bus stop
+apt-018,1400,3,14,3,Lausanne,1,0,0,0,0,0,0,0,1,0,1,0,1,balcony|bus stop
+apt-019,1080,2,9,8,Lausanne,0,0,0,0,0,0,0,1,1,0,1,0,1,balcony|quiet|bus stop
+apt-020,700,2,9,7,Prilly,0,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-021,550,1,19,19,Lavigny,1,0,0,0,0,0,0,0,0,0,0,1,0,
+apt-022,600,2,7,5,Renens,0,0,0,0,0,0,0,1,0,1,1,0,0,view|quiet|bus stop
+apt-023,500,1,21,21,Clarmont,1,1,1,0,0,0,0,1,1,0,0,0,0,balcony|quiet
+apt-024,500,1,21,8,Pully,1,1,1,0,1,1,0,1,0,1,1,0,0,view|quiet|bus stop
+apt-025,550,1,39,39,Eclépens,1,1,1,0,1,1,0,1,0,0,0,0,0,quiet
+apt-026,2110,4,5,7,Chavannes-près-Renens,0,0,0,0,0,0,0,1,1,1,1,0,1,balcony|view|quiet|bus stop
+apt-027,415,1,11,0,Lausanne,0,1,1,0,1,1,0,1,0,0,1,0,0,quiet|bus stop
+apt-028,650,2,12,6,Lausanne,1,0,0,0,0,0,0,1,1,0,1,0,1,balcony|quiet|bus stop
+apt-029,400,1,12,6,Lausanne,1,1,1,0,1,1,0,1,0,0,1,0,1,quiet|bus stop
+apt-030,670,1,14,3,Lausanne,0,0,0,0,0,0,0,0,0,0,1,0,0,bus stop
+apt-031,480,1,6,9,Ecublens,1,1,1,0,1,1,0,0,0,0,1,0,1,bus stop
+apt-032,850,2,18,6,Lausanne,1,0,0,0,0,0,0,0,0,0,1,1,0,bus stop
+apt-033,420,1,39,39,Cossonay-Ville,1,1,1,0,0,0,0,1,0,0,0,0,0,quiet
+apt-034,920,2,7,5,Renens,0,0,0,0,0,0,0,1,1,1,1,0,0,balcony|view|quiet|bus stop
+apt-035,600,1,6,9,Ecublens,0,1,1,0,1,1,0,1,0,0,0,0,1,quiet
+apt-036,650,1,6,9,Ecublens,1,0,0,0,0,0,0,1,1,1,1,0,1,balcony|view|quiet|bus stop
+apt-037,900,2,21,8,Pully,0,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-038,770,2,5,7,Chavannes-près-Renens,0,0,0,0,0,0,0,1,0,0,1,0,1,quiet|bus stop
+apt-039,506,2,11,0,Lausanne,0,0,0,0,0,0,0,0,1,0,1,0,1,balcony|bus stop
+apt-040,450,1,9,8,Lausanne,1,1,1,0,1,1,0,0,0,0,1,0,0,bus stop
+apt-041,600,1,19,19,Lonay,1,1,1,0,0,0,0,1,0,0,0,0,0,quiet
+apt-042,418,1,13,3,Lausanne,0,1,1,0,1,1,0,0,1,0,1,0,0,balcony|bus stop
+apt-043,500,1,9,7,Prilly,1,1,1,0,1,1,0,1,0,0,1,0,0,quiet|bus stop
+apt-044,500,1,9,13,Bussigny-près-Lausanne,1,0,0,0,0,0,0,1,0,0,1,1,0,quiet|bus stop
+apt-045,750,1,5,6,St-Sulpice,1,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-046,650,1,18,6,Lausanne,1,1,1,0,1,1,0,1,1,0,0,0,0,balcony|quiet
+apt-047,630,1,14,8,Lausanne,0,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-048,575,1,9,7,Prilly,1,1,1,0,1,1,0,1,1,1,0,0,0,balcony|view|quiet
+apt-049,630,1,16,8,Lausanne,1,0,0,0,0,0,0,0,1,0,1,0,0,balcony|bus stop
+apt-050,450,1,22,9,Paudex,1,1,1,0,1,1,0,1,1,1,1,0,0,balcony|view|quiet|bus stop
+apt-051,450,1,12,6,Lausanne,1,0,0,0,0,0,0,1,0,0,1,1,1,quiet|bus stop
+apt-052,600,1,19,13,Préverenges,1,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-053,400,1,18,16,Le Mont-sur-Lausanne,1,1,1,0,0,0,0,1,0,0,0,1,0,quiet
+apt-054,500,1,21,8,Pully,1,1,1,0,1,1,0,1,0,0,1,0,0,quiet|bus stop
+apt-055,580,1,7,5,Renens,1,0,0,0,1,1,0,0,0,0,1,0,1,bus stop
+apt-056,600,1,19,19,Belmont-sur-Lausanne,1,0,0,0,0,0,0,0,1,1,0,0,0,balcony|view
+apt-057,500,1,9,7,Prilly,1,1,1,0,1,1,0,1,0,0,1,0,1,quiet|bus stop
+apt-058,550,1,6,9,Ecublens,1,1,0,0,1,1,0,0,0,0,0,0,1,
+apt-059,650,1,12,6,Lausanne,0,0,0,0,0,0,0,0,0,0,1,0,1,bus stop
+apt-060,850,2,14,8,Lausanne,1,0,0,0,0,0,0,1,0,0,0,0,1,quiet
+apt-061,500,1,7,5,Renens,1,0,0,0,0,0,0,0,0,1,1,0,1,view|bus stop
+apt-062,600,1,19,13,Préverenges,1,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-063,550,1,16,8,Lausanne,1,1,1,0,1,1,0,1,1,1,1,0,0,balcony|view|quiet|bus stop
+apt-064,706,2,13,3,Lausanne,1,0,0,0,0,0,0,1,1,1,0,0,0,balcony|view|quiet
+apt-065,410,1,19,19,Cheseaux-sur-Lausanne,1,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-066,475,1,10,12,Crissier,0,1,1,0,1,1,0,0,1,0,1,0,1,balcony|bus stop
+apt-067,550,1,14,3,Lausanne,0,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-068,575,1,12,6,Lausanne,0,0,0,0,0,0,0,0,0,0,1,0,0,bus stop
+apt-069,1010,2,39,39,Yverdon-les-Bains,1,0,0,0,0,0,0,1,1,0,1,0,0,balcony|quiet|bus stop
+apt-070,460,1,18,6,Lausanne,1,1,1,0,1,1,0,0,0,0,1,0,0,bus stop
+apt-071,550,1,14,3,Lausanne,1,1,1,0,0,0,0,0,0,1,1,0,1,view|bus stop
+apt-072,500,1,19,13,Préverenges,1,1,1,0,1,1,0,0,0,0,0,0,0,
+apt-073,1190,2,39,39,Penthaz,0,0,0,0,0,0,0,1,0,0,0,0,0,quiet
+apt-074,400,1,9,8,Lausanne,1,1,1,0,1,1,0,1,0,0,1,0,1,quiet|bus stop
+apt-075,500,1,13,3,Lausanne,1,1,1,0,1,1,0,1,0,0,1,0,0,quiet|bus stop
+apt-076,500,1,39,39,Vufflens-la-Ville,1,1,1,0,0,0,0,1,0,0,0,1,0,quiet
+apt-077,550,1,21,8,Pully,0,1,1,0,0,0,0,1,1,0,1,1,0,balcony|quiet|bus stop
+apt-078,1000,2,5,6,St-Sulpice,1,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-079,320,1,32,32,Croy,1,0,0,0,1,1,0,0,0,0,0,1,0,
+apt-080,610,1,6,9,Ecublens,1,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-081,800,1,12,6,Lausanne,0,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-082,500,1,18,6,Lausanne,1,1,1,0,1,1,0,1,0,0,1,0,0,quiet|bus stop
+apt-083,785,2,7,5,Renens,0,0,0,0,0,0,0,0,1,0,1,0,1,balcony|bus stop
+apt-084,1703,4,12,6,Lausanne,0,0,0,0,0,0,0,1,0,0,1,1,1,quiet|bus stop
+apt-085,450,1,14,3,Lausanne,1,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-086,700,1,5,6,St-Sulpice,1,0,0,0,0,0,0,1,0,0,1,0,1,quiet|bus stop
+apt-087,1300,3,18,6,Lausanne,1,0,0,0,0,0,0,0,0,0,0,0,0,
+apt-088,950,2,9,13,Bussigny-près-Lausanne,1,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-089,600,1,19,19,Etagnières,0,1,1,0,1,1,0,1,0,1,0,0,0,view|quiet
+apt-090,470,1,13,3,Lausanne,1,1,1,0,1,1,0,1,0,0,1,0,0,quiet|bus stop
+apt-091,500,1,9,8,Lausanne,1,1,1,0,1,1,0,0,0,0,1,0,1,bus stop
+apt-092,450,1,6,9,Ecublens,1,1,1,0,1,1,0,0,0,0,1,0,1,bus stop
+apt-093,720,1,19,13,Préverenges,0,0,0,0,0,0,0,0,1,0,1,0,0,balcony|bus stop
+apt-094,500,1,9,8,Lausanne,1,1,1,0,1,1,0,1,0,0,1,0,0,quiet|bus stop
+apt-095,500,1,9,7,Prilly,1,1,1,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-096,950,1,10,12,Crissier,1,0,0,0,0,0,0,0,1,0,1,1,0,balcony|bus stop
+apt-097,550,1,18,6,Lausanne,1,0,0,0,0,0,0,1,0,0,1,1,0,quiet|bus stop
+apt-098,750,2,5,7,Chavannes-près-Renens,0,0,0,0,0,0,0,1,1,1,1,0,1,balcony|view|quiet|bus stop
+apt-099,550,1,19,13,Préverenges,1,1,1,1,0,0,0,1,0,0,1,0,0,quiet|bus stop|fitted kitchen
+apt-100,795,2,6,9,Ecublens,0,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-101,420,1,7,5,Renens,0,0,0,0,0,0,0,0,0,0,1,0,0,bus stop
+apt-102,710,1,9,8,Lausanne,0,0,0,0,0,0,0,0,0,0,1,0,1,bus stop
+apt-103,740,1,9,8,Lausanne,0,0,0,0,0,0,0,1,1,0,1,0,1,balcony|quiet|bus stop
+apt-104,1770,4,7,5,Renens,0,0,0,0,0,0,0,0,0,1,1,0,1,view|bus stop
+apt-105,850,2,8,13,Denges,1,0,0,0,0,0,0,1,1,1,1,1,0,balcony|view|quiet|bus stop
+apt-106,460,1,7,5,Renens,1,1,1,0,1,1,0,0,1,0,1,0,0,balcony|bus stop
+apt-107,420,1,7,5,Renens,1,1,1,0,1,1,0,1,0,0,1,0,1,quiet|bus stop
+apt-108,920,2,14,3,Lausanne,1,0,0,0,0,0,0,1,1,1,1,0,0,balcony|view|quiet|bus stop
+apt-109,780,2,7,5,Renens,0,1,1,0,1,1,0,0,0,0,1,0,1,bus stop
+apt-110,1650,4,14,8,Lausanne,0,0,0,0,0,0,0,0,0,1,1,0,0,view|bus stop
+apt-111,600,1,6,9,Ecublens,0,0,0,0,0,0,0,1,0,0,1,0,1,quiet|bus stop
+apt-112,523,1,9,8,Lausanne,0,0,0,0,0,0,0,1,0,1,1,0,1,view|quiet|bus stop
+apt-113,923,3,12,6,Lausanne,1,0,0,0,0,0,0,1,1,0,0,0,1,balcony|quiet
+apt-114,400,1,10,12,Crissier,1,1,1,0,1,1,0,1,0,0,1,1,0,quiet|bus stop
+apt-115,530,1,18,6,Lausanne,1,0,0,0,1,1,0,1,0,0,1,1,0,quiet|bus stop
+apt-116,500,1,7,5,Renens,1,1,1,0,0,0,0,1,0,0,1,0,1,quiet|bus stop
+apt-117,1100,2,6,9,Ecublens,1,0,0,0,0,0,0,0,0,0,1,0,1,bus stop
+apt-118,1500,4,14,3,Lausanne,0,0,0,0,0,0,0,0,0,0,0,0,0,
+apt-119,450,1,9,7,Prilly,1,1,1,0,1,1,0,0,0,0,1,0,0,bus stop
+apt-120,300,1,10,12,Crissier,1,1,1,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-121,550,1,12,6,Lausanne,1,1,1,0,1,1,0,1,1,0,1,0,1,balcony|quiet|bus stop
+apt-122,980,2,16,8,Lausanne,0,0,0,0,0,0,0,0,0,0,1,0,0,bus stop
+apt-123,560,2,9,8,Lausanne,1,1,1,0,1,1,0,0,0,0,0,0,0,
+apt-124,460,1,9,8,Lausanne,0,1,1,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-125,550,1,6,9,Ecublens,1,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-126,500,1,14,8,Lausanne,1,0,0,0,1,1,0,0,0,0,1,0,1,bus stop
+apt-127,300,1,9,8,Lausanne,1,1,1,0,1,1,0,0,0,0,1,0,0,bus stop
+apt-128,580,1,7,5,Renens,0,0,0,0,0,0,0,0,1,1,1,0,0,balcony|view|bus stop
+apt-129,470,1,9,8,Lausanne,1,1,1,0,1,1,0,0,0,0,1,0,1,bus stop
+apt-130,500,1,7,5,Renens,1,1,1,0,1,1,0,1,0,0,1,0,0,quiet|bus stop
+apt-131,550,1,7,5,Renens,1,1,1,0,1,1,0,1,0,1,1,0,1,view|quiet|bus stop
+apt-132,460,1,14,3,Lausanne,1,1,1,0,1,1,0,0,1,0,1,0,0,balcony|bus stop
+apt-133,450,2,21,8,Pully,1,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-134,600,1,16,8,Lausanne,1,1,1,0,1,1,0,1,1,1,1,0,0,balcony|view|quiet|bus stop
+apt-135,550,1,9,7,Prilly,1,1,1,0,0,0,0,1,0,0,1,1,0,quiet|bus stop
+apt-136,560,1,9,8,Lausanne,0,0,0,0,0,0,0,0,0,0,1,0,1,bus stop
+apt-137,440,1,9,8,Lausanne,1,1,1,0,1,1,0,1,0,0,1,0,0,quiet|bus stop
+apt-138,300,1,22,9,Paudex,1,0,0,0,1,1,1,1,0,1,1,0,0,view|quiet|bus stop|bathtub
+apt-139,600,1,16,8,Lausanne,0,1,1,0,0,0,0,1,1,1,1,0,1,balcony|view|quiet|bus stop
+apt-140,650,1,13,3,Lausanne,1,0,0,0,0,0,0,1,0,0,1,0,1,quiet|bus stop
+apt-141,550,1,9,8,Lausanne,1,1,1,0,1,1,0,1,0,0,1,0,0,quiet|bus stop
+apt-142,330,1,18,6,Lausanne,1,0,0,0,1,1,0,0,0,0,1,0,0,bus stop
+apt-143,350,1,49,49,Jongny,1,0,0,0,1,1,0,0,0,0,1,0,0,bus stop
+apt-144,890,2,10,12,Crissier,1,0,0,0,0,0,0,0,0,0,1,0,0,bus stop
+apt-145,600,1,14,14,Sullens,1,1,1,0,0,0,0,1,0,0,1,0,1,quiet|bus stop
+apt-146,600,1,9,13,Bussigny-près-Lausanne,1,0,0,0,0,0,0,1,1,0,1,0,0,balcony|quiet|bus stop
+apt-147,585,1,14,3,Lausanne,0,0,0,0,0,0,0,1,0,0,0,0,0,quiet
+apt-148,500,1,19,13,Préverenges,1,1,1,0,1,1,0,1,0,0,1,1,0,quiet|bus stop
+apt-149,750,1,6,9,Ecublens,1,0,0,0,0,0,0,0,0,0,0,0,1,
+apt-150,700,2,9,7,Prilly,1,0,0,0,0,0,0,0,0,0,1,0,0,bus stop
+apt-151,450,1,12,6,Lausanne,1,1,1,0,1,1,0,0,1,0,1,0,1,balcony|bus stop
+apt-152,1450,2,9,8,Lausanne,1,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-153,740,2,16,8,Lausanne,0,0,0,0,0,0,0,1,0,0,1,1,0,quiet|bus stop
+apt-154,800,2,9,8,Lausanne,1,0,0,0,0,0,0,1,0,0,1,1,0,quiet|bus stop
+apt-155,1020,2,9,7,Prilly,1,0,0,0,0,0,0,0,0,0,1,0,1,bus stop
+apt-156,565,1,12,6,Lausanne,0,0,0,0,0,0,0,0,1,0,0,0,1,balcony
+apt-157,500,1,8,13,Echandens-Denges,1,0,0,0,0,0,0,1,0,0,1,1,0,quiet|bus stop
+apt-158,560,1,9,8,Lausanne,0,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-159,500,1,19,19,St-Barthélemy,1,1,1,0,0,0,0,0,0,0,0,1,0,
+apt-160,870,2,14,3,Lausanne,1,0,0,0,0,0,0,0,0,0,1,0,1,bus stop
+apt-161,650,1,14,3,Lausanne,0,0,0,0,0,0,0,0,0,0,1,1,1,bus stop
+apt-162,600,1,9,7,Prilly,1,0,0,0,0,0,0,1,0,1,1,0,0,view|quiet|bus stop
+apt-163,600,1,12,6,Lausanne,1,0,0,0,0,0,0,1,0,0,1,0,1,quiet|bus stop
+apt-164,1390,3,14,8,Lausanne,0,1,1,0,1,1,0,0,0,1,1,0,0,view|bus stop
+apt-165,1580,4,6,9,Ecublens,0,0,0,0,0,0,0,1,0,0,1,0,1,quiet|bus stop
+apt-166,840,1,13,3,Lausanne,1,0,0,0,0,0,0,0,0,0,1,0,0,bus stop
+apt-167,660,1,19,13,Préverenges,0,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-168,600,1,5,6,St-Sulpice,1,1,1,0,1,1,0,1,0,0,1,0,0,quiet|bus stop
+apt-169,489,1,7,5,Renens,0,0,0,0,0,0,0,1,0,0,1,0,1,quiet|bus stop
+apt-170,500,1,14,8,Lausanne,0,1,1,0,1,1,0,0,0,0,1,1,0,bus stop
+apt-171,850,2,21,8,Pully,1,0,0,0,0,0,0,1,0,1,1,1,0,view|quiet|bus stop
+apt-172,460,1,9,8,Lausanne,1,1,1,0,1,1,0,0,0,0,1,0,1,bus stop
+apt-173,690,1,7,5,Renens,0,0,0,0,0,0,0,0,0,0,1,0,1,bus stop
+apt-174,500,1,7,5,Renens,1,1,1,0,0,0,0,0,0,0,1,0,1,bus stop
+apt-175,1065,2,13,3,Lausanne,1,1,0,1,1,0,1,0,0,0,1,1,1,bus stop|fitted kitchen|bathtub
+apt-176,1250,2,9,8,Lausanne,1,0,0,0,0,0,0,1,0,0,1,0,1,quiet|bus stop
+apt-177,625,1,9,7,Prilly,1,0,0,0,0,0,0,1,0,0,1,0,0,quiet|bus stop
+apt-178,670,2,9,8,Lausanne,0,0,0,0,0,0,0,0,0,0,1,0,1,bus stop
+apt-179,795,1,9,8,Lausanne,0,0,0,0,0,0,0,0,0,0,1,1,0,bus stop
+apt-180,990,1,12,6,Lausanne,1,0,0,0,0,0,0,0,0,0,0,1,1,
+apt-181,550,1,13,3,Lausanne,0,1,1,0,1,1,0,1,0,0,1,0,0,quiet|bus stop
+apt-182,930,2,13,3,Lausanne,0,1,0,1,0,0,0,1,0,0,1,0,0,quiet|bus stop|fitted kitchen
+apt-183,932,2,9,8,Lausanne,1,0,0,0,0,0,0,0,0,0,1,0,1,bus stop
+apt-184,1400,4,14,8,Lausanne,0,0,0,0,0,0,0,0,1,1,0,0,0,balcony|view
+apt-185,400,1,19,19,Tolochenaz,1,1,1,0,1,1,0,1,1,1,1,0,0,balcony|view|quiet|bus stop
+apt-186,690,1,9,8,Lausanne,1,0,0,0,0,0,0,1,1,0,1,0,0,balcony|quiet|bus stop

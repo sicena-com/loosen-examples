@@ -1,0 +1,29 @@
+# Everything with one command:  docker compose up
+#   examples  http://localhost:8123/        (the static pages)
+#   loosend   http://localhost:8130/health  (the Loosen server, catalogue loaded from data/apartments.csv by its feed)
+#   shop      http://localhost:8124/        (the Go server-rendered shop)
+# No licence: loosend runs in evaluation mode (1000 items), the widget shows "Unlicensed copy". Put a trial key in config.js and,
+# for loosend, LOOSEND_LICENCE in your environment.
+services:
+  loosend:
+    image: ghcr.io/sicena-com/loosend:1.0.0
+    command: ["--addr", ":8080", "--config", "/examples/server/loosend.feed.json"]
+    environment:
+      LOOSEND_ADMIN_KEY: examples-admin-key-0000        # local example only
+      LOOSEND_LICENCE: ${LOOSEND_LICENCE:-}
+    volumes:
+      - ./server:/examples/server:ro
+      - ./data:/examples/data:ro
+    ports: ["127.0.0.1:8130:8080"]
+  examples:
+    image: python:3.12-alpine
+    working_dir: /app
+    command: ["sh", "-c", "[ -f config.js ] || cp config.example.js config.js; exec python3 scripts/static_server.py 8123 0.0.0.0"]
+    volumes: [".:/app"]
+    ports: ["127.0.0.1:8123:8123"]
+  shop:
+    image: golang:1.22-alpine
+    working_dir: /app
+    command: ["go", "run", "./cmd/shop", "-addr", "0.0.0.0:8124", "-root", "."]
+    volumes: [".:/app"]
+    ports: ["127.0.0.1:8124:8124"]

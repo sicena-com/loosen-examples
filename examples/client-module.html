@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Client mode, ES module - Loosen examples</title>
+<link rel="stylesheet" href="../assets/examples.css">
+<script src="../config.js"></script>
+<script src="../assets/attributes.js"></script>
+<script src="../assets/results.js"></script>
+<script type="module" src="../assets/chrome.js"></script>
+</head>
+<body data-title="Client mode, ES module"
+      data-lead="The 186 apartments are given to the widget and analysed in the visitor's browser. Import mount from the module build and give it your data as an array, a URL or an async function."
+      data-guide="data" data-guide-label="2 and 4: Add the script, give it data" data-source-extra="assets/attributes.js">
+<main>
+  <div class="presets">
+    <span>Data passed as:</span>
+    <a class="btn" id="mode-array" href="?data=array">array</a> <a class="btn" id="mode-url" href="?data=url">URL</a> <a class="btn" id="mode-function" href="?data=function">async function</a>
+  </div>
+  <div class="presets">
+    <span>Try a conflicting search:</span>
+    <button class="btn" data-preset='{"max_rent":"400","metroM1":["1"],"parking":["1"]}'>rent &le; 400, metro M1, parking</button>
+    <button class="btn" data-preset='{"max_rent":"600","max_centre":"5","parking":["1"]}'>rent &le; 600, centre &le; 5 min, parking</button>
+    <button class="btn" data-preset='{}'>reset</button>
+  </div>
+  <section class="card">
+    <form id="filters" class="filters" data-source="Form markup">
+      <label class="field">Max rent (CHF) <input type="number" name="max_rent" min="0" step="10"></label>
+      <label class="field">Min rooms <input type="number" name="min_rooms" min="1" step="1"></label>
+      <label class="field">Max minutes to the centre <input type="number" name="max_centre" min="0"></label>
+      <label><input type="checkbox" name="furnished" value="1"> Furnished</label>
+      <label><input type="checkbox" name="metroM1" value="1"> Metro M1</label>
+      <label><input type="checkbox" name="parking" value="1"> Parking</label>
+      <fieldset class="wide"><legend>Town</legend><div class="checks">
+        <label><input type="checkbox" name="town" value="Lausanne"> Lausanne</label>
+        <label><input type="checkbox" name="town" value="Renens"> Renens</label>
+        <label><input type="checkbox" name="town" value="Prilly"> Prilly</label>
+        <label><input type="checkbox" name="town" value="Ecublens"> Ecublens</label>
+        <label><input type="checkbox" name="town" value="Pully"> Pully</label>
+      </div></fieldset>
+    </form>
+  </section>
+  <div id="loosen" class="slot"></div>
+  <section class="card" id="results" aria-live="off"></section>
+</main>
+
+<script type="module" id="code">
+import {mount, fromForm} from "../vendor/loosen.mjs";            // or "https://loosen.sicena.com/widget/v1/loosen.mjs"
+
+const DATA_URL = "../data/apartments.json";
+const rows = await (await fetch(DATA_URL)).json();              // only used for the result list below: your shop has its own backend
+
+// The three ways to give the widget its data (guide section 4):
+const mode = new URLSearchParams(location.search).get("data") ?? "array";
+const data = {
+  array: rows,                                                   // an array you already have
+  url: DATA_URL,                                                 // a URL: the widget fetches it
+  function: async () => (await fetch(DATA_URL)).json(),          // an async function
+}[mode];
+
+const form = document.getElementById("filters");
+const binding = fromForm(form, {
+  max_rent:   {attr: "rent",            op: "le"},
+  min_rooms:  {attr: "rooms",           op: "ge"},
+  max_centre: {attr: "minutesToCentre", op: "le"},
+  furnished:  {attr: "furnished",       op: "eq"},
+  metroM1:    {attr: "metroM1",         op: "eq"},
+  parking:    {attr: "parking",         op: "eq"},
+  town:       {attr: "town",            op: "in"},
+});
+
+const showResults = () => Apt.render(document.getElementById("results"), rows, binding.getConstraints());
+
+const widget = mount(document.getElementById("loosen"), {
+  licence: window.LOOSEN_LICENCE,                                // optional: a free 30-day trial key goes in config.js
+  attributes: APARTMENT_ATTRIBUTES,                              // section 3: kind (required), label, format
+  data,
+  getConstraints: binding.getConstraints,
+  applyRelaxation: (relaxation, constraints) => { binding.applyRelaxation(relaxation, constraints); showResults(); },
+  restoreConstraints: constraints => { binding.restoreConstraints(constraints); showResults(); },   // turns on "Undo"
+  onPreview: binding.onPreview,                                  // marks the fields a hovered chip would change
+});
+
+form.addEventListener("input", () => { showResults(); widget.update(); });
+showResults();
+widget.update();
+
+document.getElementById(`mode-${mode}`).setAttribute("aria-current", "true");
+</script>
+</body>
+</html>
