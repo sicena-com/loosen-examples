@@ -12,7 +12,7 @@ EnvironmentFile={{BASE}}/current/.env
 # A new release: restart the two private services too, so they run the new binaries and reload the catalog (Wants=, not Requires=:
 # restarting them must not restart this unit). "+" = run as root.
 ExecStartPre=+/bin/systemctl restart loosen-examples-loosend.service loosen-examples-shop.service
-ExecStart={{BASE}}/current/bin/front -addr 127.0.0.1:8081 -root {{BASE}}/current/www -loosend http://127.0.0.1:8130 -shop http://127.0.0.1:8124 -hops 1
+ExecStart={{BASE}}/current/bin/front -addr 0.0.0.0:8081 -root {{BASE}}/current/www -loosend http://127.0.0.1:8130 -shop http://127.0.0.1:8124 -hops 1
 Restart=always
 RestartSec=5
 NoNewPrivileges=true

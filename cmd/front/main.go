@@ -1,5 +1,5 @@
 // front serves the hosted demo, https://loosen.sicena.com/demo/ (the loosen shop proxies /demo/ to it with the prefix stripped, so
-// every path below is relative to the demo root). It listens on a loopback port. Go standard library only.
+// every path below is relative to the demo root). It listens on :8081 of CT 147 (the monitor reaches /health there; nothing outside the LAN does). Go standard library only.
 //
 //	/            the static examples (an allow-list of paths: landing, examples/, assets/, vendor/, data/, a few source files, config.js)
 //	/shop/       the server-rendered shop (cmd/shop, a separate process on a loopback port)
