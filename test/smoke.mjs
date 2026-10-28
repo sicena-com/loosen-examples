@@ -206,7 +206,7 @@ else {
     const health = await (await fetch(`${LOOSEND}/health`)).json();
     check("server: loosend holds the 186 apartments", health.items === 186 && health.catalogs.apartments.items === 186);
   } else {
-    const explain = await fetch(`${BASE}/api/v1/catalogs/apartments/explain`, {method: "POST", headers: {"Content-Type": "application/json", "X-Loosen-Key": READ_KEY}, body: JSON.stringify({constraints: [{attr: "rent", op: "le", value: 400}, {attr: "metroM1", op: "eq", value: 1}, {attr: "parking", op: "eq", value: 1}]})});
+    const explain = await fetch(`${BASE}/api/v1/catalogs/apartments/explain`, {method: "POST", headers: {"Content-Type": "application/json", "X-Loosen-Key": READ_KEY, Origin: new URL(BASE).origin}, body: JSON.stringify({constraints: [{attr: "rent", op: "le", value: 400}, {attr: "metroM1", op: "eq", value: 1}, {attr: "parking", op: "eq", value: 1}]})});
     const body = await explain.json();
     check("server (hosted): loosend explains through $BASE/api over 186 items", explain.status === 200 && body.items === 186 && body.matching === 0 && body.relaxations.length > 0, JSON.stringify(body).slice(0, 200));
   }
