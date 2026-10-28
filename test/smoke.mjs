@@ -241,6 +241,54 @@ if (HOSTED) {
   }
 }
 
+// ---- 9a. minItems ("Suggest changes when fewer than N results"): one match, N = 3 -> every chip gives >= 3; N = 1 -> nothing ----
+async function minItemsCheck(page, name, trigger) {
+  const control = page.locator("#min-items");
+  check(`${name}: the minItems input exists (default 1, min 1)`, (await control.inputValue()) === "1" && (await control.getAttribute("min")) === "1");
+  await trigger();
+  await waitChips(page);
+  const labels = await chips(page).allInnerTexts();
+  const counts = labels.map(l => Number((l.match(/([\d,]+) results?/) ?? [])[1]?.replace(",", "")));
+  check(`${name}: N = 3 with 1 match: ${labels.length} chips, every count >= 3`, labels.length >= 1 && counts.every(n => n >= 3), labels.join(" / "));
+  check(`${name}: the panel says "at least 3 results"`, /at least 3 results/.test(await page.locator("#loosen .panel").first().innerText()));
+  return counts;
+}
+const noPanel = async (page, name) => { await sleep(600); check(`${name}: N = 1 with matches > 0: no panel`, (await page.locator("#loosen .panel").count()) === 0 && (await chips(page).count()) === 0); };
+const setN = async (page, n) => { await page.locator("#min-items").fill(String(n)); await page.locator("#min-items").dispatchEvent("change"); };
+for (const [file, name, trigger] of [
+  ["client-module", "client-module", p => () => p.locator("button[data-min-items]").click()],
+  ["form-fromform", "fromForm", p => () => p.locator("button[data-min-items]").click()],
+  ["by-hand", "by-hand", p => () => p.locator("button[data-min-items]").click()],
+  ["facets-state", "facets", p => () => p.locator("#preset-c").click()],
+  ["react", "react", p => () => p.locator("#preset-c").click()],
+  ...(loosendUp ? [["server", "server", p => () => p.locator("button[data-min-items]").click()]] : []),
+]) {
+  const page = await open(`${BASE}/examples/${file}.html`);
+  if (file === "server") await page.locator("#status.good").waitFor({timeout: 5000});
+  await minItemsCheck(page, `minItems ${name}`, trigger(page));
+  check(`minItems ${name}: the input shows 3 after the preset`, (await page.locator("#min-items").inputValue()) === "3");
+  await setN(page, 1);
+  await noPanel(page, `minItems ${name}`);
+  noProblems(page, `minItems ${name}`);
+  await page.context_.close();
+}
+{ // the URL shop: ?minItems=3 is read by the page, kept when a chip navigates
+  const url = `${SHOP}/?max_price=1200&min_rooms=3&minItems=3`;
+  const page = await open(url);
+  check("minItems shop: the server renders 1 apartment", (await countNumber(page)) === 1, await countText(page));
+  check("minItems shop: the form input shows 3", (await page.locator("input[name=minItems]").inputValue()) === "3");
+  await waitChips(page);
+  const labels = await chips(page).allInnerTexts();
+  check("minItems shop: every chip gives >= 3 results", labels.length >= 1 && labels.every(l => Number((l.match(/([\d,]+) results?/) ?? [])[1]?.replace(",", "")) >= 3), labels.join(" / "));
+  await Promise.all([page.waitForURL(u => u.search !== new URL(url).search), chips(page).first().click()]);
+  check(`minItems shop: the relaxed URL keeps minItems=3 (${new URL(page.url()).search})`, new URL(page.url()).searchParams.get("minItems") === "3");
+  const plain = await open(`${SHOP}/?max_price=1200&min_rooms=3`);
+  await sleep(600);
+  check("minItems shop: without the parameter (N = 1) and 1 match there is no panel", (await plain.locator("#loosen .panel").count()) === 0);
+  noProblems(page, "minItems shop");
+  await page.context_.close(); await plain.context_.close();
+}
+
 // ---- 9. playground ----
 {
   const page = await open(`${BASE}/examples/playground.html`);

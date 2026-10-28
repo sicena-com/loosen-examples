@@ -20,6 +20,7 @@
     <span>Try a conflicting search:</span>
     <button class="btn" id="preset-a">rent &le; 400, metro M1, parking</button>
     <button class="btn" id="preset-b">rent &le; 600, centre &le; 5 min, parking</button>
+    <button class="btn" id="preset-c">rent &le; 450, centre &le; 5 min, metro M1, at least 3 results</button>
     <button class="btn" id="preset-reset">reset</button>
   </div>
   <div id="app"></div>
@@ -49,7 +50,7 @@ const toFilters = constraints => ({
   towns: constraints.find(c => c.attr === "town")?.values ?? [],
 });
 
-function useLoosen(containerRef, filters, setFilters) {
+function useLoosen(containerRef, filters, setFilters, minItems) {
   const latest = React.useRef(filters);
   latest.current = filters;                          // getConstraints must read the newest filters
   const widget = React.useRef(null);
@@ -64,11 +65,12 @@ function useLoosen(containerRef, filters, setFilters) {
       // reads it right after this function (it compares that reading with the later update(); otherwise the Undo would be dropped)
       applyRelaxation: (relaxation, constraints) => apply(toFilters(relaxedConstraints(relaxation, constraints))),
       restoreConstraints: constraints => apply(toFilters(constraints)),        // Undo
+      minItems,                                      // explain when fewer than this many items match (guide 5.8)
     });
     return () => widget.current.destroy();
-  }, []);
+  }, [minItems]);                                    // minItems is a mount option: mount again when it changes
 
-  React.useEffect(() => { widget.current?.update(); }, [filters]);
+  React.useEffect(() => { widget.current?.update(); }, [filters, minItems]);
 }
 
 function Results({filters}) {
@@ -79,9 +81,11 @@ function Results({filters}) {
 
 function App() {
   const [filters, setFilters] = React.useState(EMPTY);
+  const [minItems, setMinItems] = React.useState(1);
   const ref = React.useRef(null);
-  useLoosen(ref, filters, setFilters);
+  useLoosen(ref, filters, setFilters, minItems);
   window.setReactFilters = setFilters;               // only for the preset buttons of this page
+  window.setReactMinItems = setMinItems;
   const set = patch => setFilters({...filters, ...patch});
   const num = v => (v === "" ? null : Number(v));
   return h("div", null,
@@ -94,6 +98,9 @@ function App() {
         h("label", {key: t}, h("input", {type: "checkbox", name: "town", value: t, checked: filters.towns.includes(t),
           onChange: e => set({towns: e.target.checked ? [...filters.towns, t] : filters.towns.filter(x => x !== t)})}), " " + t))))
     )),
+    h("p", {className: "minitems"}, h("label", null, "Suggest changes when fewer than ",
+      h("input", {type: "number", id: "min-items", min: 1, step: 1, value: minItems, onChange: e => setMinItems(Math.max(1, Math.floor(Number(e.target.value)) || 1))}), " results"),
+      " ", h("span", {className: "small"}, "(1: only when nothing matches)")),
     h("div", {id: "loosen", className: "slot", ref}),
     h(Results, {filters}));
 }
@@ -103,6 +110,7 @@ ReactDOM.createRoot(document.getElementById("app")).render(h(App));
 // preset buttons of this page
 document.getElementById("preset-a").onclick = () => window.setReactFilters({...EMPTY, maxRent: 400, metro: true, parking: true});
 document.getElementById("preset-b").onclick = () => window.setReactFilters({...EMPTY, maxRent: 600, maxCentre: 5, parking: true});
+document.getElementById("preset-c").onclick = () => { window.setReactFilters({...EMPTY, maxRent: 450, maxCentre: 5, metro: true}); window.setReactMinItems(3); };
 document.getElementById("preset-reset").onclick = () => window.setReactFilters(EMPTY);
 </script>
 </body>

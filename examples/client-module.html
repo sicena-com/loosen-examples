@@ -22,6 +22,7 @@
     <span>Try a conflicting search:</span>
     <button class="btn" data-preset='{"max_rent":"400","metroM1":["1"],"parking":["1"]}'>rent &le; 400, metro M1, parking</button>
     <button class="btn" data-preset='{"max_rent":"600","max_centre":"5","parking":["1"]}'>rent &le; 600, centre &le; 5 min, parking</button>
+    <button class="btn" data-preset='{"max_rent":"1200","min_rooms":"3"}' data-min-items="3">rent &le; 1200, rooms &ge; 3, at least 3 results</button>
     <button class="btn" data-preset='{}'>reset</button>
   </div>
   <section class="card">
@@ -41,6 +42,7 @@
       </div></fieldset>
     </form>
   </section>
+  <p class="minitems"><label>Suggest changes when fewer than <input type="number" id="min-items" min="1" step="1" value="1"> results</label> <span class="small">(1: only when nothing matches)</span></p>
   <div id="loosen" class="slot"></div>
   <section class="card" id="results" aria-live="off"></section>
 </main>
@@ -72,19 +74,27 @@ const binding = fromForm(form, {
 
 const showResults = () => Apt.render(document.getElementById("results"), rows, binding.getConstraints());
 
-const widget = mount(document.getElementById("loosen"), {
-  licence: window.LOOSEN_LICENCE,                                // optional: a free 30-day trial key goes in config.js
-  attributes: APARTMENT_ATTRIBUTES,                              // section 3: kind (required), label, format
-  data,
-  getConstraints: binding.getConstraints,
-  applyRelaxation: (relaxation, constraints) => { binding.applyRelaxation(relaxation, constraints); showResults(); },
-  restoreConstraints: constraints => { binding.restoreConstraints(constraints); showResults(); },   // turns on "Undo"
-  onPreview: binding.onPreview,                                  // marks the fields a hovered chip would change
-});
+const minItems = document.getElementById("min-items");           // "Suggest changes when fewer than N results" (guide 5.8)
+let widget;
+const start = () => {
+  widget?.destroy();                                         // minItems is a mount option: mount again when it changes
+  widget = mount(document.getElementById("loosen"), {
+    licence: window.LOOSEN_LICENCE,                                // optional: a free 30-day trial key goes in config.js
+    attributes: APARTMENT_ATTRIBUTES,                              // section 3: kind (required), label, format
+    data,
+    getConstraints: binding.getConstraints,
+    applyRelaxation: (relaxation, constraints) => { binding.applyRelaxation(relaxation, constraints); showResults(); },
+    restoreConstraints: constraints => { binding.restoreConstraints(constraints); showResults(); },   // turns on "Undo"
+    onPreview: binding.onPreview,                                  // marks the fields a hovered chip would change
+    minItems: Number(minItems.value) || 1,                       // explain when fewer than this many items match (guide 5.8)
+  });
+  widget.update();
+};
+minItems.addEventListener("change", start);
 
 form.addEventListener("input", () => { showResults(); widget.update(); });
 showResults();
-widget.update();
+start();
 
 document.getElementById(`mode-${mode}`).setAttribute("aria-current", "true");
 </script>

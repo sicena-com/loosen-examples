@@ -31,6 +31,23 @@ Open <https://loosen.sicena.com/demo/> (hosted) or `http://localhost:8123/` afte
 
 The React page runs the recipe of section 5.4 in real React 18 (tested with Playwright, including Undo). Running it found a bug in the recipe as printed; it is fixed in the guide and the page uses the fixed version.
 
+## Not only zero results: `minItems`
+
+Loosen also acts when **fewer than N** items match, not only when nothing does ("show me at least 3 options"). Every suggestion then gives at least N results and
+says how many ([guide 5.8](https://loosen.sicena.com/docs/install#minitems)). Every variant has a field **Suggest changes when fewer than [N] results** (default 1, minimum 1;
+at 1 the panel shows only for an empty result):
+
+| Variant | Where the field is | How it reaches the widget |
+|---|---|---|
+| 1 client module, 3 fromForm, 4 by hand, 5 facets, 8 server mode | a number input `#min-items` next to the widget | `minItems` is a mount option and the widget has no setter, so the page mounts again (`widget.destroy()`, then `mount`) when the value changes. In server mode it is sent in the `explain` request |
+| 6 React | the same input, as React state | a dependency of the mounting effect |
+| 7 URL shop | a number input in the GET form, parameter `?minItems=3` | read by the Go page and by the widget; kept in the URL when a chip navigates |
+| 9 playground | `minItems` and `userMinItems` (the visitor's own "Warn me if fewer than [N] results") | the options panel |
+
+**Try:** rent &le; 1200 and rooms &ge; 3 matches one apartment. With N = 3 the widget offers *Rent &le; 1380 CHF · 3 results* and *Rooms &ge; 2 · 40 results*.
+There is a button for it on the pages (and `examples/client-module.html?preset=minItems` opens it done); the shop: `/?max_price=1200&min_rooms=3&minItems=3`. The pages without a
+rooms field (React, server mode) use rent &le; 450, centre &le; 5 min, metro M1 (one match).
+
 ## Run it
 
 Requirements: `python3` **or** Go (1.22+) for the static server. Docker is optional (loosend and the compose file). Nothing to install, nothing to build.

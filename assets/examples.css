@@ -53,3 +53,4 @@ a.btn { text-decoration: none; display: inline-block; color: var(--fg); } [aria-
 /* The widget inherits only text properties from the page. On a dark page its own light background would clash with the inherited light text,
    so these pages hand it the page colours through the documented custom properties (guide section 7). */
 #loosen { --loosen-bg: var(--surface); --loosen-border: var(--border); --loosen-muted: var(--muted); --loosen-accent: var(--accent); --loosen-accent-fg: var(--accent-fg); --loosen-chip-bg: var(--chip-bg); --loosen-chip-fg: var(--chip-fg); --loosen-warn: var(--warn); }
+.minitems { margin: .8rem 0 0; font-size: .92rem; } .minitems input { width: 4.5rem; }

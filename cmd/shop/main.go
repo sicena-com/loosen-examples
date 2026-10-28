@@ -38,6 +38,7 @@ type Apartment struct {
 // Filters are the URL parameters, WooCommerce style. A zero value means "not set".
 type Filters struct {
 	MaxPrice, MinRooms, MaxCentre int
+	MinItems                      int // ?minItems=3: suggest changes when fewer than this many apartments match (default 1)
 	Towns                         []string
 	Furnished, Metro, Parking     bool
 }
@@ -52,6 +53,9 @@ func parseFilters(q map[string][]string) Filters {
 	num := func(k string) int { n, _ := strconv.Atoi(get(k)); return n }
 	f := Filters{MaxPrice: num("max_price"), MinRooms: num("min_rooms"), MaxCentre: num("max_centre"),
 		Furnished: get("furnished") == "1", Metro: get("metro") == "1", Parking: get("parking") == "1"}
+	if f.MinItems = num("minItems"); f.MinItems < 1 {
+		f.MinItems = 1
+	}
 	for _, v := range q["filter_town"] { // ?filter_town=Lausanne&filter_town=Pully  or  ?filter_town=Lausanne,Pully
 		for _, t := range strings.Split(v, ",") {
 			if t = strings.TrimSpace(t); t != "" {
@@ -196,6 +200,7 @@ const shopHTML = `<!doctype html>
     <span>Try a conflicting search:</span>
     <a class="btn" href="?max_price=400&amp;metro=1&amp;parking=1">rent &le; 400, metro M1, parking</a>
     <a class="btn" href="?max_price=600&amp;max_centre=5&amp;parking=1">rent &le; 600, centre &le; 5 min, parking</a>
+    <a class="btn" href="?max_price=1200&amp;min_rooms=3&amp;minItems=3">rent &le; 1200, rooms &ge; 3, at least 3 results</a>
     <a class="btn" href="?">reset</a>
   </div>
   <section class="card">
@@ -209,6 +214,7 @@ const shopHTML = `<!doctype html>
       <fieldset class="wide"><legend>Town</legend><div class="checks">{{range .Towns}}
         <label><input type="checkbox" name="filter_town" value="{{.}}" {{if $.F.HasTown .}}checked{{end}}> {{.}}</label>{{end}}
       </div></fieldset>
+      <label class="field wide">Suggest changes when fewer than <input type="number" name="minItems" min="1" step="1" value="{{.F.MinItems}}" style="width:5rem"> results</label>
       <div class="wide"><button class="btn" type="submit">Apply filters</button> <span class="muted">(a normal GET form: the page reloads)</span></div>
     </form>
   </section>
@@ -247,7 +253,7 @@ const getConstraints = () => {
 };
 
 const relaxedUrl = (relaxation, constraints) => {
-  const query = new URLSearchParams(location.search);
+  const query = new URLSearchParams(location.search);          // keeps every other parameter, minItems included
   for (const change of relaxation.changes) {
     const p = PARAMS.find(x => x.attr === constraints[change.index].attr);
     if (change.action === "adapt") query.set(p.param, String(change.value)); else query.delete(p.param);
@@ -260,6 +266,7 @@ const widget = mount(document.getElementById("loosen"), {
   attributes: APARTMENT_ATTRIBUTES,
   data: "../data/apartments.json",                          // client mode, as a URL (a real shop would send its catalogue or use server mode)
   getConstraints,
+  minItems: Number(new URLSearchParams(location.search).get("minItems")) || 1,   // ?minItems=3: explain when fewer than 3 apartments match (guide 5.8)
   autoUpdate: false,                                     // the page is replaced: nothing to update
   applyRelaxation: (relaxation, constraints) => location.assign(relaxedUrl(relaxation, constraints)),
   // no restoreConstraints: the page reloads, so there is no panel to hold an Undo button. The Back button undoes it.

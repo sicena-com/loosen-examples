@@ -18,6 +18,7 @@
     <span>Try a conflicting search:</span>
     <button class="btn" id="preset-a">rent &le; 400, Pully, balcony + view</button>
     <button class="btn" id="preset-b">rent &le; 500, centre &le; 5 min, quiet + view + balcony</button>
+    <button class="btn" id="preset-c">rent &le; 1200, rooms &ge; 3, at least 3 results</button>
     <button class="btn" id="preset-reset">reset</button>
   </div>
   <div class="layout two">
@@ -29,6 +30,7 @@
       <div class="facet"><h3>Features (all of)</h3><div id="features"></div></div>
     </aside>
     <div>
+      <p class="minitems"><label>Suggest changes when fewer than <input type="number" id="min-items" min="1" step="1" value="1"> results</label> <span class="small">(1: only when nothing matches)</span></p>
       <div id="loosen" class="slot" style="margin-top:0"></div>
       <section class="card" id="results"></section>
     </div>
@@ -65,15 +67,23 @@ const toState = constraints => {
   return next;
 };
 
-const widget = mount(document.getElementById("loosen"), {
-  licence: window.LOOSEN_LICENCE, attributes: APARTMENT_ATTRIBUTES, data: rows,
-  getConstraints: () => toConstraints(state),
-  applyRelaxation: (relaxation, constraints) => {
-    Object.assign(state, toState(relaxedConstraints(relaxation, constraints)));   // relaxedConstraints = the list after the click
-    render();                                                                      // your own re-search / re-render goes here
-  },
-  restoreConstraints: constraints => { Object.assign(state, toState(constraints)); render(); },   // Undo
-});
+const minItems = document.getElementById("min-items");           // "Suggest changes when fewer than N results" (guide 5.8)
+let widget;
+const start = () => {
+  widget?.destroy();                                         // minItems is a mount option: mount again when it changes
+  widget = mount(document.getElementById("loosen"), {
+    licence: window.LOOSEN_LICENCE, attributes: APARTMENT_ATTRIBUTES, data: rows,
+    getConstraints: () => toConstraints(state),
+    applyRelaxation: (relaxation, constraints) => {
+      Object.assign(state, toState(relaxedConstraints(relaxation, constraints)));   // relaxedConstraints = the list after the click
+      render();                                                                      // your own re-search / re-render goes here
+    },
+    restoreConstraints: constraints => { Object.assign(state, toState(constraints)); render(); },   // Undo
+    minItems: Number(minItems.value) || 1,                       // explain when fewer than this many items match (guide 5.8)
+  });
+  widget.update();
+};
+minItems.addEventListener("change", start);
 
 // ---- the rest is the demo's own facet UI ----
 const $ = id => document.getElementById(id);
@@ -100,12 +110,16 @@ const onUser = () => {   // the visitor's own change: update the state, render, 
 };
 $("facets").addEventListener("input", onUser);
 render();
-widget.update();
+start();
 
 // preset buttons of this page
 const preset = (id, s) => $(id).addEventListener("click", () => { Object.assign(state, toState(s)); render(); widget.update(); });
 preset("preset-a", [{attr: "rent", op: "le", value: 400}, {attr: "town", op: "in", values: ["Pully"]}, {attr: "features", op: "allOf", values: ["balcony", "view"]}]);
 preset("preset-b", [{attr: "rent", op: "le", value: 500}, {attr: "minutesToCentre", op: "le", value: 5}, {attr: "features", op: "allOf", values: ["quiet", "view", "balcony"]}]);
+$("preset-c").addEventListener("click", () => {   // one match, but the visitor wants at least 3
+  Object.assign(state, toState([{attr: "rent", op: "le", value: 1200}, {attr: "rooms", op: "ge", value: 3}]));
+  render(); minItems.value = 3; start();
+});
 preset("preset-reset", []);
 </script>
 </body>

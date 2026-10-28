@@ -19,6 +19,7 @@
     <span>Try a conflicting search:</span>
     <button class="btn" data-preset='{"max_rent":"400","furnished":"0","metroM1":"1"}'>rent &le; 400, furnished = no, metro M1 = yes</button>
     <button class="btn" data-preset='{"max_rent":"600","max_centre":"5","parking":"1"}'>rent &le; 600, centre &le; 5 min, parking = yes</button>
+    <button class="btn" data-preset='{"max_rent":"450","max_centre":"5","metroM1":"1"}' data-min-items="3">rent &le; 450, centre &le; 5 min, metro M1 = yes, at least 3 results</button>
     <button class="btn" data-preset='{}'>reset</button>
   </div>
   <section class="card">
@@ -30,6 +31,7 @@
       <div class="yn" role="group" aria-label="Parking"><span>Parking</span><label><input type="radio" name="parking" value="1"> yes</label><label><input type="radio" name="parking" value="0"> no</label><button type="button" data-clear="parking">any</button></div>
     </form>
   </section>
+  <p class="minitems"><label>Suggest changes when fewer than <input type="number" id="min-items" min="1" step="1" value="1"> results</label> <span class="small">(1: only when nothing matches)</span></p>
   <div id="loosen" class="slot"></div>
   <section class="card" id="results"></section>
   <details class="source" open style="margin-top:1rem"><summary>Setting up the server (copy and paste)</summary>
@@ -67,19 +69,27 @@ const binding = fromForm(form, {
 });
 const showResults = () => Apt.render(document.getElementById("results"), rows, binding.getConstraints());
 
-const widget = mount(document.getElementById("loosen"), {
-  licence: window.LOOSEN_LICENCE,
-  attributes: APARTMENT_ATTRIBUTES,                              // server mode: only labels and formats are used; kinds live in the catalog
-  server,                                                        // instead of `data`
-  getConstraints: binding.getConstraints,
-  applyRelaxation: (relaxation, constraints) => { binding.applyRelaxation(relaxation, constraints); showResults(); },
-  restoreConstraints: constraints => { binding.restoreConstraints(constraints); showResults(); },
-  onPreview: binding.onPreview,
-  onEvent: event => { if (event.type === "error") showStatus(`The widget reported an error: ${event.code}, ${event.message}`, false); },
-});
+const minItems = document.getElementById("min-items");           // "Suggest changes when fewer than N results" (guide 5.8)
+let widget;
+const start = () => {
+  widget?.destroy();                                         // minItems is a mount option: mount again when it changes
+  widget = mount(document.getElementById("loosen"), {
+    licence: window.LOOSEN_LICENCE,
+    attributes: APARTMENT_ATTRIBUTES,                              // server mode: only labels and formats are used; kinds live in the catalog
+    server,                                                        // instead of `data`
+    getConstraints: binding.getConstraints,
+    applyRelaxation: (relaxation, constraints) => { binding.applyRelaxation(relaxation, constraints); showResults(); },
+    restoreConstraints: constraints => { binding.restoreConstraints(constraints); showResults(); },
+    onPreview: binding.onPreview,
+    onEvent: event => { if (event.type === "error") showStatus(`The widget reported an error: ${event.code}, ${event.message}`, false); },
+    minItems: Number(minItems.value) || 1,                       // explain when fewer than this many items match (guide 5.8)
+  });
+  widget.update();
+};
+minItems.addEventListener("change", start);
 form.addEventListener("input", () => { showResults(); widget.update(); });
 showResults();
-widget.update();
+start();
 
 // ---- the rest only tells the developer whether the server is there ----
 function showStatus(text, good) {

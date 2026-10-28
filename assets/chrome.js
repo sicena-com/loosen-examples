@@ -64,6 +64,11 @@ document.addEventListener("click", ev => {
       else field.value = v ?? "";
     }
     form.dispatchEvent(new Event("input", {bubbles: true}));
+    if (preset.dataset.minItems) {                                  // a preset can also set "Suggest changes when fewer than N results"
+      if (window.setReactMinItems) window.setReactMinItems(Number(preset.dataset.minItems));
+      const box = document.getElementById("min-items");
+      if (box && !window.setReactMinItems) { box.value = preset.dataset.minItems; box.dispatchEvent(new Event("change", {bubbles: true})); }
+    }
   }
   const clear = ev.target.closest?.("[data-clear]");                // a "clear" button next to a yes/no radio pair
   if (clear) {
@@ -72,6 +77,15 @@ document.addEventListener("click", ev => {
     form.dispatchEvent(new Event("input", {bubbles: true}));
   }
 });
+
+// ?preset=minItems opens a page with the "one match, at least 3 results" search already done (the button marked data-min-items / #preset-c)
+if (new URLSearchParams(location.search).get("preset") === "minItems") {
+  const timer = setInterval(() => {                               // wait until the page's script has mounted the widget
+    if (!document.getElementById("loosen")?.children.length) return;
+    clearInterval(timer);
+    (document.querySelector("button[data-min-items]") ?? document.getElementById("preset-c"))?.click();
+  }, 100);
+}
 
 // ---- Source block ----
 async function text(url) { const r = await fetch(url); if (!r.ok) throw new Error(`${url}: ${r.status}`); return r.text(); }

@@ -31,6 +31,12 @@
     <p class="small" style="margin-bottom:0">Each chip applies the change to <em>your</em> filters (fields, state object, URL), your list refreshes, and an Undo button appears. Two searches with no result in this catalogue: <b>rent &le; 400 + not furnished + metro M1</b> and <b>rent &le; 600 + centre &le; 5 min + parking</b>; every page has buttons for them.</p>
   </section>
 
+  <section class="card" id="min-items-preset">
+    <h2 style="margin-top:0">Not only zero results: <code>minItems</code></h2>
+    <p class="muted" style="margin-top:0">Loosen also helps when a few results are left. Every variant has a field <b>Suggest changes when fewer than [N] results</b> (default 1: only when nothing matches). Try: <b>rent &le; 1200, rooms &ge; 3</b> finds one apartment; with <b>N = 3</b> the widget offers <em>Rent &le; 1380 CHF &middot; 3 results</em> and <em>Rooms &ge; 2 &middot; 40 results</em>.</p>
+    <p class="small" style="margin-bottom:0">One click: <a href="examples/client-module.html?preset=minItems">client mode</a>, <a href="examples/form-fromform.html?preset=minItems">fromForm</a>, <a href="examples/by-hand.html?preset=minItems">by hand</a>; the buttons &ldquo;at least 3 results&rdquo; on the other pages do the same.</p>
+  </section>
+
   <h2>The variants</h2>
   <ul class="cards">
     <li><h3><span class="num">1</span>Client mode, ES module</h3><p><code>mount</code> from <code>vendor/loosen.mjs</code>. Data as an array, a URL or an async function.</p>

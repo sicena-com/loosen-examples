@@ -1,8 +1,10 @@
 # Deploying the hosted demo
 
 The demo at <https://loosen.sicena.com/demo/> runs on CT 147 (the machine of the Loosen shop). This folder is everything needed to rebuild it; it is generic
-(replace the host names and the `projects.json` entry for another machine) and contains no secret: the loosend admin key is in `../config/prod.secrets.env.sops`
+(replace the host names and the `projects.json` entry for another machine) and contains no secret in the clear: the loosend admin key is in `../config/prod.secrets.env.sops`
 (SOPS) and the licence key in `../config/prod.env` is public by design (bound to the host `loosen.sicena.com`).
+
+**Decision (David): the demo's loosend admin key is SOPS-encrypted in this public repository, by design.** loosend listens on loopback only (127.0.0.1:8130), nothing outside the CT can use the key, and the demo catalogue is public data; moving the key out of the repository was considered (P1) and declined, so it stays as is.
 
 ```
 browser --HTTPS--> david-iac proxy --> loosen shop (Go, CT 147 :8080) --/demo/ (prefix stripped, GET/HEAD, and POST explain only)--> front (127.0.0.1:8081)
