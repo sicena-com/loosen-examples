@@ -188,6 +188,13 @@ Found while building these examples. Items 1 and 2 are fixed in the guide (and i
 
 The example code is MIT ([LICENSE](LICENSE)). `vendor/loosen.*` is the Loosen widget under [Loosen's terms](https://loosen.sicena.com/terms); `vendor/react*` is MIT; see [NOTICE](NOTICE).
 
+## Documents to read
+
+1. **This file** (the variants, how to run them, the licence keys, the hosted demo).
+2. [`data/README.md`](data/README.md) (the catalogue and its field dictionary) and [`deploy/README.md`](deploy/README.md) (how the hosted demo is built and run on CT 147, and the decision about the demo's admin key).
+3. The Loosen guide: <https://loosen.sicena.com/docs/install> (source: `cbte2/docs/INTEGRATION.md` in the product repository) and <https://loosen.sicena.com/docs/server>.
+4. Product and shop (maintainers): `~/dev/cbte2/README.md`, `~/dev/loosen/README.md`. What is left to do here: [`TODO.md`](TODO.md).
+
 ## Links and contact
 
 [Install guide](https://loosen.sicena.com/docs/install) · [Server docs](https://loosen.sicena.com/docs/server) · [Downloads](https://loosen.sicena.com/downloads) · [Free trial](https://loosen.sicena.com/trial) · [Contact](https://loosen.sicena.com/contact)
