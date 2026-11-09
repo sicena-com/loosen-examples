@@ -193,7 +193,12 @@ The example code is MIT ([LICENSE](LICENSE)). `vendor/loosen.*` is the Loosen wi
 1. **This file** (the variants, how to run them, the licence keys, the hosted demo).
 2. [`data/README.md`](data/README.md) (the catalogue and its field dictionary) and [`deploy/README.md`](deploy/README.md) (how the hosted demo is built and run on CT 147, and the decision about the demo's admin key).
 3. The Loosen guide: <https://loosen.sicena.com/docs/install> (source: `cbte2/docs/INTEGRATION.md` in the product repository) and <https://loosen.sicena.com/docs/server>.
-4. Product and shop (maintainers): `~/dev/cbte2/README.md`, `~/dev/loosen/README.md`. What is left to do here: [`TODO.md`](TODO.md).
+4. Product and shop (maintainers): `~/dev/cbte2/README.md`, `~/dev/loosen/README.md`. What is left to do here: worklog tasks, unit `loosen-examples` (`worklog_task list --unit loosen-examples`).
+
+## Decisions (do not reopen)
+
+* The demo's `loosend` admin key is SOPS-encrypted in this public repository by design (loopback-only, public demo data; moving it out was considered and declined).
+* The second example language is French. The demo works with a production licence for the host `loosen.sicena.com` only.
 
 ## Links and contact
 
