@@ -24,6 +24,6 @@ for arg in "$@"; do
 done
 cd "$DIR"
 case "$MODE" in
-  rollback | status) exec "$DEPLOY_PY" loosen-examples "--$MODE" ;;
+  rollback | status) exec "$DEPLOY_PY" sicena/loosen-examples "--$MODE" ;;
 esac
-exec "$DEPLOY_PY" loosen-examples prod "${COMMON[@]}"
+exec "$DEPLOY_PY" sicena/loosen-examples prod "${COMMON[@]}"
